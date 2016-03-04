@@ -12,7 +12,7 @@ from PhysicsTools.HeppyCore.framework.heppy_loop import getHeppyOption
 #-------- SET OPTIONS AND REDEFINE CONFIGURATIONS -----------
 
 is50ns = getHeppyOption("is50ns",False)
-runData = getHeppyOption("runData",True)
+runData = getHeppyOption("runData",False)
 scaleProdToLumi = float(getHeppyOption("scaleProdToLumi",-1)) # produce rough equivalent of X /pb for MC datasets
 saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",True)
 removeJetReCalibration = getHeppyOption("removeJetReCalibration",False)
@@ -22,9 +22,9 @@ forcedFineSplitFactor = getHeppyOption("fineSplitFactor",-1)
 isTest = getHeppyOption("test",None) != None and not re.match("^\d+$",getHeppyOption("test"))
 
 # Define skims
-signalSkim = False
+signalSkim = True
 diLepSkim = False
-singleLepSkim = True
+singleLepSkim = False
 
 # --- MONOJET SKIMMING ---
 if signalSkim == True:
