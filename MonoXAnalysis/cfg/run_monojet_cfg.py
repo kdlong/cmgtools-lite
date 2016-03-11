@@ -25,10 +25,10 @@ doLepCorr = getHeppyOption("doLepCorr",True)
 doPhotonCorr = getHeppyOption("doPhotonCorr",True)
 
 # Define skims
-signalSkim = True
+signalSkim = False
 diLepSkim = False
 singleLepSkim = False
-singlePhotonSkim = False
+singlePhotonSkim = True
 
 # --- MONOJET SKIMMING ---
 if signalSkim == True:
@@ -314,12 +314,13 @@ if forcedSplitFactor>0 or forcedFineSplitFactor>0:
 if runData==False and not isTest: # MC all
     ### 25 ns 74X MC samples
     is50ns = False
-    mcSamples = mcSamples_monojet_Asymptotic25ns
-    if signalSkim:
+    mcSamples = GJetsHT + DYJetsM50HT + WJetsToLNuHT + QCDHT  #mcSamples_monojet_Asymptotic25ns
+#I commented if ... and last two lines
+#    if signalSkim:
         # full signal scan (many datasets!)
         # mcSamples += mcSamples_monojet_Asymptotic25ns_signals
-        monojet_signals_cherrypick = [ DMS_Mphi_2000_Mchi_1_gSM_1p0_gDM_1p0, DMPS_Mphi_2000_Mchi_1_gSM_1p0_gDM_1p0, DMAV_Mphi_2000_Mchi_1_gSM_0p25_gDM_1p0]
-        mcSamples += monojet_signals_cherrypick
+#        monojet_signals_cherrypick = [ DMS_Mphi_2000_Mchi_1_gSM_1p0_gDM_1p0, DMPS_Mphi_2000_Mchi_1_gSM_1p0_gDM_1p0, DMAV_Mphi_2000_Mchi_1_gSM_0p25_gDM_1p0]
+#        mcSamples += monojet_signals_cherrypick
     selectedComponents = mcSamples 
 
 ### 50 ns 74X MC samples
