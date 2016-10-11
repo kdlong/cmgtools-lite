@@ -14,7 +14,7 @@ from CMGTools.RootTools.samples.autoAAAconfig import *
 #-------- SET OPTIONS AND REDEFINE CONFIGURATIONS -----------
 
 is50ns = getHeppyOption("is50ns",False)
-runData = getHeppyOption("runData",True)
+runData = getHeppyOption("runData",False)
 scaleProdToLumi = float(getHeppyOption("scaleProdToLumi",-1)) # produce rough equivalent of X /pb for MC datasets
 saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",True)
 saveFatJetIDVariables = getHeppyOption("saveFatJetIDVariables",True)
@@ -29,13 +29,13 @@ doPhotonCorr = getHeppyOption("doPhotonCorr",True)
 # Define skims
 signalSkim = False
 diLepSkim = False
-singleLepSkim = True
-singlePhotonSkim = False
+singleLepSkim = False
+singlePhotonSkim = True
 
 # --- MONOJET SKIMMING ---
 if signalSkim == True:
-    monoJetSkim.metCut = 200
-    monoJetSkim.jetPtCuts = [60]
+    monoJetSkim.metCut = 130
+    monoJetSkim.jetPtCuts = [70,50]
 
 # --- Z->ll control sample SKIMMING ---
 if diLepSkim == True:
@@ -48,10 +48,10 @@ if singleLepSkim == True:
 (lepton.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Tight_full5x5") and (lepton.relIso03<0.0354 if abs(lepton.superCluster().eta())<1.479 else lepton.relIso03<0.0646))'
     #monoJetCtrlLepSkim.idCut='(lepton.muonID("POG_SPRING15_25ns_v1_Veto")) if abs(lepton.pdgId())==13 else (lepton.electronID("POG_SPRING15_25ns_v1_Veto"))'
     monoJetCtrlLepSkim.ptCuts = [40]
-    monoJetSkim.jetPtCuts = [100]
+    monoJetSkim.jetPtCuts = [70,50]
 if singlePhotonSkim == True:
     gammaJetCtrlSkim.minPhotons = 1
-    monoJetSkim.jetPtCuts = [60]
+    monoJetSkim.jetPtCuts = [70,50]
 
 # --- Photon OR Electron SKIMMING ---
 #if photonOrEleSkim == True:
@@ -185,7 +185,7 @@ sequence = cfg.Sequence(dmCoreSequence+[
 
 from CMGTools.RootTools.samples.triggers_13TeV_Spring15 import *
 from CMGTools.RootTools.samples.triggers_8TeV import triggers_1mu_8TeV, triggers_mumu_8TeV, triggers_mue_8TeV, triggers_ee_8TeV;
-triggers_AllMonojet = triggers_metNoMu90_mhtNoMu90 + triggers_metNoMu120_mhtNoMu120 + triggers_AllMET170 + triggers_AllMET300
+triggers_AllMonojet = triggers_metNoMu90_mhtNoMu90 + triggers_metNoMu100_mhtNoMu100 + triggers_metNoMu110_mhtNoMu110 + triggers_metNoMu120_mhtNoMu120 + triggers_AllMET170 + triggers_AllMET300
 triggers_SinglePhoton = triggers_photon155 + triggers_photon165_HE10 + triggers_photon175 + triggers_jet  # last ones added to recover L1 issue of tight H/E cut
 triggerFlagsAna.triggerBits = {
     'DoubleMu' : triggers_mumu_iso,
@@ -195,6 +195,8 @@ triggerFlagsAna.triggerBits = {
     'SingleMu' : triggers_1mu_iso,
     'SingleEl' : triggers_1e,
     'MonoJetMetNoMuMHT90' : triggers_metNoMu90_mhtNoMu90,
+    'MonoJetMetNoMuMHT100' : triggers_metNoMu100_mhtNoMu100,
+    'MonoJetMetNoMuMHT110' : triggers_metNoMu110_mhtNoMu110,
     'MonoJetMetNoMuMHT120' : triggers_metNoMu120_mhtNoMu120,
     'Met170'   : triggers_AllMET170,
     'Met300'   : triggers_AllMET300,
@@ -325,7 +327,7 @@ if runData==False and not isTest: # MC all
     #mcSamples = [WJetsToLNu_HT1200to2500, ZJetsToNuNu_HT1200to2500_ext]
     if signalSkim:
         # H -> invisibles mass scan (gg + VBF)
-        mcSamples = (VBF_HToInvisible + GluGlu_HToInvisible)
+        mcSamples += (VBF_HToInvisible + GluGlu_HToInvisible)
     selectedComponents = mcSamples 
     for comp in selectedComponents:
         comp.splitFactor = len(comp.files)/4
@@ -392,6 +394,7 @@ elif test == 'synch-80X': # sync
     elif what == "VBFHinv":
         comp = kreator.makeMCComponent("VBF_HToInvisible_M125","/VBF_HToInvisible_M125_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM", "CMS", ".*root", 3.782)
         comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring16MiniAODv2/VBF_HToInvisible_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/90000/0E1D90B0-583A-E611-8CC4-008CFA56D894.root' ]
+        triggerFlagsAna.processName = 'HLT2'
         selectedComponents = [ comp ]
     elif what == "DYJets":
         comp = DYJetsToLL_M50
@@ -406,7 +409,7 @@ elif test == 'synch-80X': # sync
         comp.files = [ 'root://eoscms//eos/cms/store/mc/RunIISpring16MiniAODv1/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/60000/00DD003D-4201-E611-A6F7-0CC47A745282.root' ]
         selectedComponents = [ comp ]
     else:
-        selectedComponents = mcSamples_diboson#monojet_Asymptotic25ns
+        selectedComponents = monojet_Asymptotic25ns
     jetAna.smearJets       = False
     for comp in selectedComponents:
         comp.splitFactor = 1

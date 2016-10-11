@@ -7,7 +7,6 @@ kreator = ComponentCreator()
 
 ### common MC samples
 from CMGTools.RootTools.samples.samples_13TeV_RunIISpring16MiniAODv2 import *
-
 ### --- mc ---
 
 # --- 25 ns background samples ---
@@ -19,7 +18,7 @@ DiBosons_MJ    = [ WW, WZ, ZZ ]
 
 #diboson analysis samples
 TTBar          = [ TT_pow_ext3 ]
-WJetsToLNu     = [ WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600to800, WJetsToLNu_HT800to1200_ext, WJetsToLNu_HT1200to2500, WJetsToLNu_HT2500toInf ]
+WJetsToLNu_HT     = [ WJetsToLNu_HT100to200, WJetsToLNu_HT200to400, WJetsToLNu_HT400to600, WJetsToLNu_HT600to800, WJetsToLNu_HT800to1200_ext, WJetsToLNu_HT1200to2500, WJetsToLNu_HT2500toInf ]
 SingleTop      = [ TToLeptons_sch_amcatnlo, TBar_tWch, T_tWch ]
 
 #V+gamma samples
@@ -27,14 +26,19 @@ from CMGTools.MonoXAnalysis.samples.samples_13TeV_VJETS_RunIISpring16MiniAODv2 i
 TTBar_amcatnlo = [ TTJets ]
 TTGammaJets    = [ TTGJets ]
 WJetsToLNu_amcatnlo = [ WJetsToLNu ]
-QCD = QCDHT
+#QCD = QCDHT
 GammaJets = GJets
 VV_VBosonGamma = VV_VGamma
 
-mcSamples_monojet_Asymptotic25ns = WJetsToLNuHT
+mcSamples_monojet_Asymptotic25ns = ZJetsToNuNu_MJ + VJets_MJ + Top_MJ + DiBosons_MJ + GJetsHT + EWKV2Jets
+mcSamples_diboson_Asymptotic25ns = TTBar #SingleTop + WJetsToLNu_HT + DiBosons_MJ# + TTBar
+mcSamples_zgamma_Asymptotic25ns = TTBar_amcatnlo + WJetsToLNu_amcatnlo + QCDHT + GJetsHT + VV_VBosonGamma + TTGammaJets
+mcSamples_zgamma_Signal = VGamma_signal
 
 ### ----------------------------- summary ----------------------------------------     
 mcSamples_monojet = mcSamples_monojet_Asymptotic25ns
+mcSamples_diboson = mcSamples_diboson_Asymptotic25ns
+mcSamples_zgamma = mcSamples_zgamma_Signal
 
 from CMGTools.TTHAnalysis.setup.Efficiencies import *
 dataDir = "$CMSSW_BASE/src/CMGTools/TTHAnalysis/data"
