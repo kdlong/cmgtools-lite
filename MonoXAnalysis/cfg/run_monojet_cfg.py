@@ -48,7 +48,7 @@ if singleLepSkim == True:
 (lepton.electronID("POG_Cuts_ID_SPRING15_25ns_v1_ConvVetoDxyDz_Tight_full5x5") and (lepton.relIso03<0.0354 if abs(lepton.superCluster().eta())<1.479 else lepton.relIso03<0.0646))'
     #monoJetCtrlLepSkim.idCut='(lepton.muonID("POG_SPRING15_25ns_v1_Veto")) if abs(lepton.pdgId())==13 else (lepton.electronID("POG_SPRING15_25ns_v1_Veto"))'
     monoJetCtrlLepSkim.ptCuts = [40]
-    monoJetSkim.jetPtCuts = [70,60]
+    monoJetSkim.jetPtCuts = [100]
 if singlePhotonSkim == True:
     gammaJetCtrlSkim.minPhotons = 1
     monoJetSkim.jetPtCuts = [60]
@@ -246,12 +246,12 @@ if runData and not isTest: # For running on data
     # ProcessingsAndRunRanges.append( ("Run2015D-16Dec2015-v1", [256630,260627] ) ); Shorts.append("Run2015D_16Dec")
     
     # --- 2016 DATA ---
-    ProcessingsAndRunRanges.append( ("Run2016B-PromptReco-v1", [272023,273146] ) ); Shorts.append("Run2016B_PromptReco_v1")
-    ProcessingsAndRunRanges.append( ("Run2016B-PromptReco-v2", [273150,275376] ) ); Shorts.append("Run2016B_PromptReco_v2")
-    ProcessingsAndRunRanges.append( ("Run2016C-PromptReco-v2", [275420,276283] ) ); Shorts.append("Run2016C_PromptReco_v2")
-    ProcessingsAndRunRanges.append( ("Run2016D-PromptReco-v2", [276315,276811] ) ); Shorts.append("Run2016D_PromptReco_v2")
-    ProcessingsAndRunRanges.append( ("Run2016E-PromptReco-v2", [276830,277420] ) ); Shorts.append("Run2016E_PromptReco_v2")
-    ProcessingsAndRunRanges.append( ("Run2016F-PromptReco-v1", [277820,278808] ) ); Shorts.append("Run2016F_PromptReco_v1")
+    # ProcessingsAndRunRanges.append( ("Run2016B-PromptReco-v1", [272023,273146] ) ); Shorts.append("Run2016B_PromptReco_v1")
+    # ProcessingsAndRunRanges.append( ("Run2016B-PromptReco-v2", [273150,275376] ) ); Shorts.append("Run2016B_PromptReco_v2")
+    # ProcessingsAndRunRanges.append( ("Run2016C-PromptReco-v2", [275420,276283] ) ); Shorts.append("Run2016C_PromptReco_v2")
+    # ProcessingsAndRunRanges.append( ("Run2016D-PromptReco-v2", [276315,276811] ) ); Shorts.append("Run2016D_PromptReco_v2")
+    # ProcessingsAndRunRanges.append( ("Run2016E-PromptReco-v2", [276830,277420] ) ); Shorts.append("Run2016E_PromptReco_v2")
+    # ProcessingsAndRunRanges.append( ("Run2016F-PromptReco-v1", [277820,278808] ) ); Shorts.append("Run2016F_PromptReco_v1")
     ProcessingsAndRunRanges.append( ("Run2016G-PromptReco-v1", [278817,279931] ) ); Shorts.append("Run2016G_PromptReco_v1")
 
     if diLepSkim == True:
@@ -321,7 +321,7 @@ if forcedSplitFactor>0 or forcedFineSplitFactor>0:
 if runData==False and not isTest: # MC all
     ### 25 ns 74X MC samples
     is50ns = False
-    # mcSamples = mcSamples_monojet_Asymptotic25ns
+    mcSamples = mcSamples_monojet_Asymptotic25ns
     #mcSamples = [WJetsToLNu_HT1200to2500, ZJetsToNuNu_HT1200to2500_ext]
     if signalSkim:
         # H -> invisibles mass scan (gg + VBF)
