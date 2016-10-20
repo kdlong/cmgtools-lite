@@ -1,6 +1,5 @@
-skim: nJetClean > 1 && JetClean1_pt > 80 && JetClean2_pt > 50 && metNoMu_pt > 130
-trigger: HLT_MonoJetMetNoMuMHT90==1 || HLT_MonoJetMetNoMuMHT120==1 || HLT_Met170==1 || HLT_Met300==1 ||run==1
-metfilters: Flag_globalTightHalo2016Filter && Flag_HBHENoiseFilter && Flag_HBHENoiseIsoFilter && Flag_eeBadScFilter && Flag_goodVertices && Flag_EcalDeadCellTriggerPrimitiveFilter
+trigger: HLT_MonoJetMetNoMuMHT90==1 || HLT_MonoJetMetNoMuMHT120==1 || run==1
+metfilters: Flag_HBHENoiseFilter==1 && Flag_HBHENoiseIsoFilter==1 && Flag_EcalDeadCellTriggerPrimitiveFilter==1 && Flag_goodVertices==1 && Flag_eeBadScFilter==1 && Flag_globalTightHalo2016Filter==1
 muveto: nMu10V==0
 elveto: nEle10V==0
 photonveto: nGamma15V==0
