@@ -121,5 +121,16 @@ float u2_2(float met_pt, float met_phi, float ref_pt, float ref_phi)
     return (ux*ref_py - uy*ref_px)/ref_pt;
 }
 
+float monojetIDcentralJet(float jetClean_leadClean, float jetClean_eta)
+{
+
+  // if jet is central, apply monojet ID requiring jetClean_leadClean (which is 1 or 0 depending on the jet to pass the ID)
+  // if jet is not central, this selection is not applied and condition is always considered true (that is 1)
+  // this condition is tipically applied on the leading jet
+  if (abs(jetClean_eta) < 2.5) return jetClean_leadClean;
+  else return 1;
+
+}
+
 
 void functions() {}
