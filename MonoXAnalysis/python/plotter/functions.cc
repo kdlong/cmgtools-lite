@@ -1,4 +1,5 @@
 #include <cmath>
+#include "TH2F.h"
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PtEtaPhiM4D.h"
 
@@ -160,6 +161,15 @@ int lepTightIdAndPt(float nLepT, float lep1_pt, int lep1_tightID, float lep2_pt,
 
 }
 
-
+float vbfdm_2Dto1D(float mjj, float detajj) {
+  float bins_mjj[6] = {0,750,1100,2000,3000,7000};
+  float bins_detajj[4] = {0,3,5,20};
+  
+  TH2F binning("binning_2D","",5,bins_mjj,3,bins_detajj);
+  if (detajj<bins_detajj[1] && mjj>bins_mjj[2]) return 3;
+  else if (detajj>bins_detajj[1] && detajj<bins_detajj[2] && mjj>bins_mjj[4]) return 7;
+  else if (detajj>bins_detajj[2] && mjj<bins_mjj[3]) return 8;
+  else return binning.GetNbinsX()*(binning.GetYaxis()->FindBin(detajj)-1) + binning.GetXaxis()->FindBin(mjj) - 2*(detajj>bins_detajj[1] && detajj<bins_detajj[2]) - 5*(detajj>bins_detajj[2]);
+}
 
 void functions() {}
