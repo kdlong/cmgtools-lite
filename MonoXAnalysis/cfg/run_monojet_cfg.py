@@ -15,7 +15,7 @@ from CMGTools.RootTools.samples.autoAAAconfig import *
 
 is50ns = getHeppyOption("is50ns",False)
 runData = getHeppyOption("runData",True)
-scaleProdToLumi = float(getHeppyOption("scaleProdToLumi",-1)) # produce rough equivalent of X /pb for MC datasets
+scaleProdToLumi = float(getHeppyOption("scaleProdToLumi",1000)) # produce rough equivalent of X /pb for MC datasets
 saveSuperClusterVariables = getHeppyOption("saveSuperClusterVariables",True)
 saveFatJetIDVariables = getHeppyOption("saveFatJetIDVariables",True)
 removeJetReCalibration = getHeppyOption("removeJetReCalibration",False)
@@ -217,7 +217,8 @@ if scaleProdToLumi>0: # select only a subset of a sample, corresponding to a giv
     target_lumi = scaleProdToLumi # in inverse picobarns
     for c in selectedComponents:
         if not c.isMC: continue
-        nfiles = int(min(ceil(target_lumi * c.xSection / 30e3), len(c.files)))
+        #nfiles = int(min(ceil(target_lumi * c.xSection / 30e3), len(c.files)))
+        nfiles = int(min(40, len(c.files)))   # generates up to 40 * 30k events per sample
         #if nfiles < 50: nfiles = min(4*nfiles, len(c.files))
         print "For component %s, will want %d/%d files; AAA %s" % (c.name, nfiles, len(c.files), "eoscms" not in c.files[0])
         c.files = c.files[:nfiles]
@@ -326,8 +327,7 @@ if runData==False and not isTest: # MC all
     ### 25 ns 74X MC samples
     is50ns = False
     mcSamples = mcSamples_monojet_Asymptotic25ns
-    mcSamples = WJetsToLNuHT
-    #mcSamples = WJetsToLNu_amcatnlo
+    mcSamples = [ WJetsToLNu_HT1200to2500 ]
     if signalSkim:
         # H -> invisibles mass scan (gg + VBF)
         mcSamples += (VBF_HToInvisible + GluGlu_HToInvisible)
