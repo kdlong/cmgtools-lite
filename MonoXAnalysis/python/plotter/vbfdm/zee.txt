@@ -1,11 +1,11 @@
 muveto: nMu10V==0
 2looseele: nEle10V == 2
-eletag: nEle40T > 0 && lepTightIdAndPt(nEle40T, LepGood1_pt, LepGood1_tightId, LepGood2_pt, LepGood2_tightId, 40, 11) && abs(LepGood1_pdgId)==11 && LepGood1_pdgId == -LepGood2_pdgId && mZ1 > 60 && mZ1 < 120
+#eletag: nEle40T > 0 && lepTightIdAndPt(nEle40T, LepGood1_pt, LepGood1_tightId, LepGood2_pt, LepGood2_tightId, 40, 11) && abs(LepGood1_pdgId)==11 && LepGood1_pdgId == -LepGood2_pdgId && mZ1 > 60 && mZ1 < 120
 #eletag: nEle40T > 0 && LepGood1_pt > 40 && LepGood1_pdgId == -LepGood2_pdgId && mZ1 > 60 && mZ1 < 120
-#eletag: nEle40T > 0 && LepGood1_pdgId == -LepGood2_pdgId && mZ1 > 60 && mZ1 < 120
+eletag: nEle40T > 0 && LepGood1_pdgId == -LepGood2_pdgId && mZ1 > 60 && mZ1 < 120
 photonveto: nGamma15V==0
 tauveto: nTauClean18V==0
-btagveto: nBTag15==0
+btagveto: nBTag20==0
 dphijm: abs(dphijm) > 0.5 && abs(dphijm) < 7.0 
 jets: JetClean1_pt > 60 && JetClean2_pt > 50 && abs(JetClean1_eta) < 4.7 && abs(JetClean2_eta) < 4.7 && monojetIDcentralJet(JetClean1_leadClean, JetClean1_eta)
 #recoil: pt_3(met_pt,met_phi,LepGood1_pt,LepGood1_phi,LepGood2_pt,LepGood2_phi) > 200

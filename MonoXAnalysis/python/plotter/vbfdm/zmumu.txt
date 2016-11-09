@@ -3,7 +3,7 @@ mutag: nMu20T > 0 && LepGood1_pdgId == -LepGood2_pdgId && mZ1 > 60 && mZ1 < 120
 eleveto: nEle10V==0
 photonveto: nGamma15V==0
 tauveto: nTauClean18V==0
-btagveto: nBTag15==0
+btagveto: nBTag20==0
 dphijm: abs(dphijm) > 0.5 && abs(dphijm) < 7.0 
 jets: JetClean1_pt > 60 && JetClean2_pt > 50 && abs(JetClean1_eta) < 4.7 && abs(JetClean2_eta) < 4.7 && monojetIDcentralJet(JetClean1_leadClean, JetClean1_eta)
 recoil: recoil_pt > 150

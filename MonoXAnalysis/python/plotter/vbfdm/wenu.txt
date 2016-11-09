@@ -3,7 +3,7 @@ muveto: nMu10V==0
 eletag: nEle40T == 1 && LepGood1_pt > 40 && abs(LepGood1_pdgId)==11 
 photonveto: nGamma15V==0
 tauveto: nTauClean18V==0
-btagveto: nBTag15==0
+btagveto: nBTag20==0
 met: met_pt > 50
 mt: mt_2(LepGood1_pt,LepGood1_phi,met_pt,met_phi) < 160
 dphijm: abs(dphijm) > 0.5 && abs(dphijm) < 7.0 
