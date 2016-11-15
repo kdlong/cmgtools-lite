@@ -175,10 +175,10 @@ float minDphi_jetsMet_withNjets(int nJet, int nJetToUse, float *jetPhiArray, flo
   if (nJet <= nJetToUse) nJetToUse = nJet;
   
   for (int i = 0; i < nJetToUse; i++) {
-    minDphi = ROOT::Math::Min(minDphi,deltaPhi(jetPhiArray[i],metPhi));
+    minDphi = ROOT::Math::Min(minDphi,fabs(deltaPhi(jetPhiArray[i],metPhi)));
   }
   
-  return minDphi;
+  return fabs(minDphi);  // this value is already in [0, Pi] by definition, but in this way it is clearer
 
 }
 
