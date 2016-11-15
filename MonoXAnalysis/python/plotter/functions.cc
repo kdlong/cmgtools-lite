@@ -161,6 +161,28 @@ int lepTightIdAndPt(float nLepT, float lep1_pt, int lep1_tightID, float lep2_pt,
 
 }
 
+float minDphi_jetsMet_withNjets(int nJet, int nJetToUse, float *jetPhiArray, float metPhi)
+{
+
+  // this function computes and retirns the minimum deltaPhi between met and the first jets
+  // nJet is the dimension of the collection of jets to use for computation
+  // nJetToUse sets how many jets to use (no more than nJet)
+  // jetPhiArray is the list of phi for the jets collection
+  // metPhi is the phi for met (can use any met)
+
+  float minDphi = 999;
+
+  if (nJet <= nJetToUse) nJetToUse = nJet;
+  
+  for (int i = 0; i < nJetToUse; i++) {
+    minDphi = ROOT::Math::Min(minDphi,deltaPhi(jetPhiArray[i],metPhi));
+  }
+  
+  return minDphi;
+
+}
+
+
 float vbfdm_2Dto1D(float mjj, float detajj) {
   float bins_mjj[6] = {0,750,1100,2000,3000,7000};
   float bins_detajj[4] = {0,3,5,20};
