@@ -8,7 +8,7 @@ mt: mt_2(LepGood1_pt,LepGood1_phi,met_pt,met_phi) > 30
 muveto: nMu10V==0
 photonveto: nGamma15V==0
 tauveto: nTauClean18V==0
-btagveto: nBTag20==0
+btagveto: nBTag15==0
 dphijm: abs(dphijm) > 2.3 && abs(dphijm) < 3.15
 jets: JetClean1_pt > 80 && JetClean2_pt > 50 && abs(JetClean1_eta) < 4.7 && abs(JetClean2_eta) < 4.7 && monojetIDcentralJet(JetClean1_leadClean, JetClean1_eta)
 recoil: recoil_pt > 200
