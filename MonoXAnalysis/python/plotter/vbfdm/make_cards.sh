@@ -13,6 +13,14 @@ fi
 
 METSKIM="TREES_MET_80X_V4"
 LEPSKIM="TREES_1LEP_80X_V4"
+#####################
+# FIX ME, for now using MET dataset also for electron region
+LEPSKIM="TREES_MET_80X_V4"
+####################################
+# use met trigger also for electron in Wenu, but remember to remove it when tests are done
+#SF_TRIGMET="*SF_trigmetnomu"
+###################################
+
 
 TREEMET="${TBASE}/$METSKIM"
 TREELEP="${TBASE}/$LEPSKIM"
@@ -28,6 +36,9 @@ PRESEL="$1"; shift
 echo "Using inputs for preselection ${PRESEL}";
 
 OPTIONS=" --s2v -j $J -l ${LUMI} -f -X trigger -U ${PRESEL} "
+####################################################
+#for now do not pass -U, I want all the selection, but presel will be vbfjets because it is the folder name used by default, will fix all of this
+#OPTIONS=" --s2v -j $J -l ${LUMI} -f -X trigger "
 
 SYST="vbfdm/systsEnv.txt"
 
@@ -46,6 +57,11 @@ if [[ "$PRESEL" == "full_sel" ]]; then
 else
     VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[0,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2250,2500,2750,3000,3500,4000]'"
 fi
+
+########################################
+# FIX ME, for now using one bin
+########################################
+VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[1100,4000]'"
 
 test -d $OUTNAME/$PRESEL/$VARNAME || mkdir -p $OUTNAME/$PRESEL/$VARNAME
 

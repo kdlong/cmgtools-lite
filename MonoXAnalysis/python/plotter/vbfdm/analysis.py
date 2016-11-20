@@ -7,6 +7,8 @@ import ROOT as rt
 from optparse import OptionParser
 from CMGTools.MonoXAnalysis.plotter.monojet.prepareRFactors import RFactorMaker
 
+lumiToUse = 12.9  # temporary solution, it would be better to pass it as an option
+
 class Analysis:
     def __init__(self,options,mcPlotsOptions=None):
     
@@ -29,20 +31,33 @@ class Analysis:
             self.MCA='vbfdm/mca-80X-muonCR.txt'
         elif region in ['ZE','WE']: 
             T=TREEDIR+'TREES_1LEP_80X_V4'
+#####################################
+#for now use always MET trees
+            T=TREEDIR+'TREES_MET_80X_V4'
             self.MCA='vbfdm/mca-80X-electronCR.txt'
         elif region in ['gjets']: 
             T=TREEDIR+'TREES_1G_80X_V4'
             self.MCA='monojet/mca-80X-Gj.txt'        
      
         corey = 'mcAnalysis.py ' if len(options.pdir)==0 else 'mcPlots.py '
-        coreopt = ' -P '+T+' --s2v -j 6 -l 24.47 -G'
+        coreopt = ' -P '+T+' --s2v -j 6 -l ' + str(lumiToUse) + ' -G'
         plotopt = ' -f --poisson --pdir ' + options.pdir
         if region != 'SR': plotopt += ' --showRatio --maxRatioRange 0.5 1.5 --fixRatioRange '
         anaOpts += [coreopt]
      
         if options.upToCut: anaOpts.append('-U '+options.upToCut)
      
-        fev = ' -F mjvars/t \"'+T+'/friends/evVarFriend_{cname}.root\" '
+        if region in ['SR']:
+            fev = ' -F mjvars/t \"'+T+'/friends_SR/evVarFriend_{cname}.root\" '
+        elif region in ['ZM','WM']:
+            fev = ' -F mjvars/t \"'+T+'/friends_VM/evVarFriend_{cname}.root\" '
+        elif region in ['ZE','WE']:
+            fev = ' -F mjvars/t \"'+T+'/friends_VE/evVarFriend_{cname}.root\" '
+            # if using TREES_MET_80X_V4 also for electron regions, use friends_VM
+            fev = ' -F mjvars/t \"'+T+'/friends_VM/evVarFriend_{cname}.root\" '
+        else:
+            print "WARNNG: no region among SR,ZM,ZE,WM,WE specified. Putting friends in ",T,"/friends/"
+            fev = ' -F mjvars/t \"'+T+'/friends/evVarFriend_{cname}.root\" '
         fsf = ' --FMC sf/t \"'+T+'/friends/sfFriend_{cname}.root\" '
         anaOpts += [fev, fsf]
         if options.synch == True: anaOpts += ['-u']
@@ -75,11 +90,14 @@ class Analysis:
      
         if region not in cuts: raise RuntimeError, "Region "+region+" not in the foreseen ones: "+cuts
         weights = {
+            #electron regions with trigmetnomu are a temporary solution for comparison with VBF H analysis, that use metnoMu also in W(ev)
             'SR': ['puw','SF_trigmetnomu','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
             'ZM' : ['puw','SF_trigmetnomu','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
-            'ZE'   : ['puw','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+            #'ZE'   : ['puw','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+            'ZE'   : ['puw','SF_trigmetnomu','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
             'WM' : ['puw','SF_trigmetnomu','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
-            'WE'  : ['puw','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+            #'WE'  : ['puw','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+            'WE'  : ['puw','SF_trigmetnomu','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
             'gjets' : ['puw','SF_BTag','SF_NLO_QCD','SF_NLO_EWK']
             }
 
@@ -141,7 +159,7 @@ if __name__ == "__main__":
                      'full_sel': ['detajj','mjj','nvtx','rho']
                      }
     rebinFactor = {'v_presel':1, 'vbfjets':1, 'full_sel':1}
-    ctrl_regions = ['ZM','WM','ZE','WE','SR']
+    ctrl_regions = ['ZM','WM','ZE','WE','SR']  # N.B. it has also SR to loop on any region. At first there were only the real CRs
 
     if options.fullControlRegions:
         pdirbase = options.pdir
@@ -149,13 +167,13 @@ if __name__ == "__main__":
             options.region = CR
             options.upToCut = ''
             for s,v in sel_steps.iteritems():
-                print "#===> Making selection / plots for control region ",options.region," at selection step: ",s, "(cut =",v,")"
+                print "#===> Making selection / plots for ",("signal" if CR=='SR' else "control")," region",options.region," at selection step: ",s, "(cut =",v,")"
                 options.upToCut = v
                 options.pdir = pdirbase+"/"+CR+("/" if CR=='SR' else "CR/")+s
                 mcpOpts = ['--xP '+','.join(exclude_plots[s]), '--rebin '+str(rebinFactor[s])]
                 if len(options.plotselect)>0: mcpOpts += ['--sP '+','.join(options.plotselect)]
                 if CR!='WE': mcpOpts += ['--xp QCD'] # too large uncertainty
-                if CR=='SR': mcpOpts += ['--showIndivSigShapes','--xp data,QCD','--rebin 2'] # blind data
+                if CR=='SR': mcpOpts += ['--showIndivSigShapes','--xp data,QCD','--rebin 2']
                 analysis = Analysis(options,mcpOpts)
                 analysis.runOne()        
 
@@ -169,7 +187,7 @@ if __name__ == "__main__":
             'WM' : ['W','EWKW'],
             'WE' : ['W','EWKW']
             }
-        all_regions = ['SR'] + ctrl_regions
+        all_regions = ctrl_regions  # ctrl_regions actually contains also SR, but renaming the list makes it easier to remember what it is
         for reg in all_regions:
             options.region = reg
             for s,v in sel_steps.iteritems():
@@ -259,7 +277,7 @@ if __name__ == "__main__":
                 hists_statonly[(den_proc,'CR')] = rfm.hists_nominal[(den_proc,'CR','nominal')]
                 rfac_statonly = rfm.computeRFactors(hists_statonly,outfile,"stat")
                 name = outname.replace(".root","")
-                lumi = 24.47
+                lumi = lumiToUse
                 rfm.makePlot(rfac_statonly,rfac_full,name,lumi,title,[])
              
                 outfile.Close()

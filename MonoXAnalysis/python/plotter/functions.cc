@@ -161,27 +161,56 @@ int lepTightIdAndPt(float nLepT, float lep1_pt, int lep1_tightID, float lep2_pt,
 
 }
 
-float minDphi_jetsMet_withNjets(int nJet, int nJetToUse, float *jetPhiArray, float metPhi)
+float minDphi_jetsMet_withNjets(int nJet, int nJetToUse, float &jetPhiArrayFirstElement, float metPhi)
 {
+  //================================
+  // WARNING
+  //
+  // at the moment the function doesn't work inside a txt cut file, it looks like I cannot pass the pointer to the collection
+  // also passing the first element as a reference and getting the address of location doesn't work
+  // following issue is raised
+  // Error in <TTreeFormula::Compile>:  Bad numerical expression : "minDphi_jetsMet_withNjets(nJetClean,50,JetClean_phi[0],metNoMu_phi)"
+  //================================
 
-  // this function computes and retirns the minimum deltaPhi between met and the first jets
+
+  // this function computes and returns the minimum deltaPhi between met and the first jets
   // nJet is the dimension of the collection of jets to use for computation
   // nJetToUse sets how many jets to use (no more than nJet)
-  // jetPhiArray is the list of phi for the jets collection
+  // jetPhiArray is the list of phi for the jets collection, taken from the pointer to first element location
   // metPhi is the phi for met (can use any met)
 
   float minDphi = 999;
+  float* jetPhiArray = &jetPhiArrayFirstElement;
 
   if (nJet <= nJetToUse) nJetToUse = nJet;
   
   for (int i = 0; i < nJetToUse; i++) {
-    minDphi = min(minDphi,fabs(deltaPhi(jetPhiArray[i],metPhi)));
+    float tmp_dphi = fabs(deltaPhi(jetPhiArray[i],metPhi));
+    minDphi = (minDphi <= tmp_dphi) ? minDphi : tmp_dphi;
   }
   
   return fabs(minDphi);  // this value is already in [0, Pi] by definition, but in this way it is clearer
 
 }
 
+int goodJetCleanNHF_eta3to3p2(float jetclean1_eta, float jetclean1_phi, float jetFwd1_nhef, float jetFwd1_eta, float jetFwd1_phi, float jetFwd2_nhef, float jetFwd2_eta, float jetFwd2_phi)
+{
+
+  // to be fixed
+
+  // check if jet is forward (eta > 2.5, we need 3.0 < eta < 3.2)
+  // if yes, then JetClean belongs to JetFwd collection and JetFwd1 should coincides with JetClean1
+  // actually JetFwd1 might not be a clean jet. We pass the leading 2 forward jet and make a match using DeltaR
+  // if neither JetFwd are matched, return 1 (function returns a flag used to apply a cut, so 1 means that cut is irrelevant)
+
+  if (std::abs(jetclean1_eta) > 3.0 && std::abs(jetclean1_eta) < 3.2) {
+    if (deltaR(jetclean1_eta, jetclean1_phi, jetFwd1_eta, jetFwd1_phi) < 0.1 ) return (jetFwd1_nhef < 0.96);
+    else if (deltaR(jetclean1_eta, jetclean1_phi, jetFwd2_eta, jetFwd2_phi) < 0.1 ) return (jetFwd2_nhef < 0.96);;
+  } else {
+    return 1;
+  }
+
+}
 
 float vbfdm_2Dto1D(float mjj, float detajj) {
   float bins_mjj[6] = {0,750,1100,2000,3000,7000};
