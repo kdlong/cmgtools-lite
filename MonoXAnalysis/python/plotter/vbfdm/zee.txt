@@ -5,9 +5,9 @@ skim: recoil_pt > 130 && nJetClean >= 2 && JetClean1_pt > 80 && JetClean1_pt > 5
 2looseele: nEle10V == 2
 eletag: nEle40T > 0 && lepTightIdAndPt(nEle40T, LepGood1_pt, LepGood1_tightId, LepGood2_pt, LepGood2_tightId, 40, 11) && abs(LepGood1_pdgId)==11 && LepGood1_pdgId == -LepGood2_pdgId && mZ1 > 60 && mZ1 < 120
 muveto: nMu10V==0
-#photonveto: nGamma15V==0
-#tauveto: nTauClean18V==0
-#btagveto: nBTag20==0
+photonveto: nGamma15V==0
+tauveto: nTauClean18V==0
+btagveto: nBTag20==0
 #dphijm: minDphi_jetsMet_withNjets(nJetClean, 50, JetClean1_phi, metNoMu_phi) > 2.3 && minDphi_jetsMet_withNjets(nJetClean, 50, JetClean1_phi, metNoMu_phi) < 3.15
 dphijm: abs(dphijm) > 2.3 && abs(dphijm) < 3.15
 jets: JetClean1_pt > 80 && JetClean2_pt > 70 && abs(JetClean1_eta) < 4.7 && abs(JetClean2_eta) < 4.7 && monojetIDcentralJet(JetClean1_leadClean, JetClean1_eta) && goodJetCleanNHF_eta3to3p2(JetClean1_eta, JetClean1_phi, JetFwd1_neHEF, JetFwd1_eta, JetFwd1_phi, JetFwd2_neHEF, JetFwd2_eta, JetFwd2_phi)

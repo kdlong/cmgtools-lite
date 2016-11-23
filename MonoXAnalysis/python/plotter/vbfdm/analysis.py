@@ -8,6 +8,8 @@ from optparse import OptionParser
 from CMGTools.MonoXAnalysis.plotter.monojet.prepareRFactors import RFactorMaker
 
 lumiToUse = 12.9  # temporary solution, it would be better to pass it as an option
+read_u2_mciprian = False
+use_TREES_MET_for_electrons = False
 
 class Analysis:
     def __init__(self,options,mcPlotsOptions=None):
@@ -18,6 +20,8 @@ class Analysis:
         if "HOSTNAME" in os.environ:  
             if os.environ["HOSTNAME"] == "pccmsrm29.cern.ch":
                 TREEDIR='/u2/emanuele/'
+                if read_u2_mciprian:
+                    TREEDIR='/u2/mciprian/'
 
         anaOpts = []
         
@@ -31,9 +35,8 @@ class Analysis:
             self.MCA='vbfdm/mca-80X-muonCR.txt'
         elif region in ['ZE','WE']: 
             T=TREEDIR+'TREES_1LEP_80X_V4'
-#####################################
-#for now use always MET trees
-            T=TREEDIR+'TREES_MET_80X_V4'
+            if use_TREES_MET_for_electrons:
+                T=TREEDIR+'TREES_MET_80X_V4'
             self.MCA='vbfdm/mca-80X-electronCR.txt'
         elif region in ['gjets']: 
             T=TREEDIR+'TREES_1G_80X_V4'
@@ -54,7 +57,8 @@ class Analysis:
         elif region in ['ZE','WE']:
             fev = ' -F mjvars/t \"'+T+'/friends_VE/evVarFriend_{cname}.root\" '
             # if using TREES_MET_80X_V4 also for electron regions, use friends_VM
-            fev = ' -F mjvars/t \"'+T+'/friends_VM/evVarFriend_{cname}.root\" '
+            if use_TREES_MET_for_electrons:
+                fev = ' -F mjvars/t \"'+T+'/friends_VM/evVarFriend_{cname}.root\" '
         else:
             print "WARNNG: no region among SR,ZM,ZE,WM,WE specified. Putting friends in ",T,"/friends/"
             fev = ' -F mjvars/t \"'+T+'/friends/evVarFriend_{cname}.root\" '
@@ -93,13 +97,26 @@ class Analysis:
             #electron regions with trigmetnomu are a temporary solution for comparison with VBF H analysis, that use metnoMu also in W(ev)
             'SR': ['puw','SF_trigmetnomu','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
             'ZM' : ['puw','SF_trigmetnomu','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
-            #'ZE'   : ['puw','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
-            'ZE'   : ['puw','SF_trigmetnomu','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+            'ZE'   : ['puw','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+            #'ZE'   : ['puw','SF_trigmetnomu','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
             'WM' : ['puw','SF_trigmetnomu','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
-            #'WE'  : ['puw','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
-            'WE'  : ['puw','SF_trigmetnomu','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+            'WE'  : ['puw','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+            #'WE'  : ['puw','SF_trigmetnomu','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
             'gjets' : ['puw','SF_BTag','SF_NLO_QCD','SF_NLO_EWK']
             }
+        if use_TREES_MET_for_electrons:
+            weights = {
+                #electron regions with trigmetnomu are a temporary solution for comparison with VBF H analysis, that use metnoMu also in W(ev)
+                'SR': ['puw','SF_trigmetnomu','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+                'ZM' : ['puw','SF_trigmetnomu','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+                'ZE'   : ['puw','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+                'ZE'   : ['puw','SF_trigmetnomu','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+                'WM' : ['puw','SF_trigmetnomu','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+                'WE'  : ['puw','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+                'WE'  : ['puw','SF_trigmetnomu','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
+                'gjets' : ['puw','SF_BTag','SF_NLO_QCD','SF_NLO_EWK']
+                }
+
 
         weightsString = " -W '" + "*".join(weights[region]) + "'"
 
