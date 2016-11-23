@@ -50,18 +50,37 @@ class Analysis:
      
         if options.upToCut: anaOpts.append('-U '+options.upToCut)
      
-        if region in ['SR']:
-            fev = ' -F mjvars/t \"'+T+'/friends_SR/evVarFriend_{cname}.root\" '
-        elif region in ['ZM','WM']:
-            fev = ' -F mjvars/t \"'+T+'/friends_VM/evVarFriend_{cname}.root\" '
-        elif region in ['ZE','WE']:
-            fev = ' -F mjvars/t \"'+T+'/friends_VE/evVarFriend_{cname}.root\" '
-            # if using TREES_MET_80X_V4 also for electron regions, use friends_VM
-            if use_TREES_MET_for_electrons:
-                fev = ' -F mjvars/t \"'+T+'/friends_VM/evVarFriend_{cname}.root\" '
-        else:
-            print "WARNNG: no region among SR,ZM,ZE,WM,WE specified. Putting friends in ",T,"/friends/"
-            fev = ' -F mjvars/t \"'+T+'/friends/evVarFriend_{cname}.root\" '
+        # if region in ['SR']:
+        #     fev = ' -F mjvars/t \"'+T+'/friends_SR/evVarFriend_{cname}.root\" '
+        # elif region in ['ZM','WM']:
+        #     fev = ' -F mjvars/t \"'+T+'/friends_VM/evVarFriend_{cname}.root\" '
+        # elif region in ['ZE','WE']:
+        #     fev = ' -F mjvars/t \"'+T+'/friends_VE/evVarFriend_{cname}.root\" '
+        #     # if using TREES_MET_80X_V4 also for electron regions, use friends_VM
+        #     if use_TREES_MET_for_electrons:
+        #         fev = ' -F mjvars/t \"'+T+'/friends_VM/evVarFriend_{cname}.root\" '
+        # else:
+        #     print "WARNNG: no region among SR,ZM,ZE,WM,WE specified. Putting friends in ",T,"/friends/"
+        #     fev = ' -F mjvars/t \"'+T+'/friends/evVarFriend_{cname}.root\" '
+
+        fdir = {
+            'SR': 'friends_SR',
+            'ZM': 'friends_VM',
+            'WM': 'friends_VM',
+            'ZE': 'friends_VE',
+            'WE': 'friends_VE',
+            }
+        if use_TREES_MET_for_electrons:
+            fdir = {
+                'SR': 'friends_SR',
+                'ZM': 'friends_VM',
+                'WM': 'friends_VM',
+                'ZE': 'friends_VM',
+                'WE': 'friends_VM',
+                }
+      
+        fev = ' -F mjvars/t \"'+T+'/'+fdir[region]+'/evVarFriend_{cname}.root\" '
+
         fsf = ' --FMC sf/t \"'+T+'/friends/sfFriend_{cname}.root\" '
         anaOpts += [fev, fsf]
         if options.synch == True: anaOpts += ['-u']

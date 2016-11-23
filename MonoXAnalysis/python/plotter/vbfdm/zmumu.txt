@@ -15,4 +15,3 @@ jets: JetClean1_pt > 80 && JetClean2_pt > 70 && abs(JetClean1_eta) < 4.7 && abs(
 mass2j: mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.) > 1100
 deta2j: abs(JetClean1_eta-JetClean2_eta) > 3.6
 vbfjets: JetClean1_eta * JetClean2_eta < 0
-
