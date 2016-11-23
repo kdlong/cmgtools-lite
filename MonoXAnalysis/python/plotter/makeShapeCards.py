@@ -211,6 +211,8 @@ for sysfile in args[4:]:
             if re.match(binmap+"$",binname) == None: continue
             if name not in systsEnv: systsEnv[name] = []
             systsEnv[name].append((re.compile(procmap+"$"),amount,field[4],field[5].split(',')))
+        elif field[4] == "lnU":
+            if options.verbose > 0: print "Systematic %s of type %s not considered for this shape analysis" %(field[0],field[4])
         else:
             raise RuntimeError, "Unknown systematic type %s" % field[4]
     if options.verbose:
