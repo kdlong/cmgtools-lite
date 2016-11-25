@@ -77,7 +77,7 @@ fi
 ########################################
 # FIX ME, for now using one bin
 ########################################
-VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[1100,4000]'"
+#VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[1100,4000]'"
 
 test -d $OUTNAME/$PRESEL/$VARNAME || mkdir -p $OUTNAME/$PRESEL/$VARNAME
 

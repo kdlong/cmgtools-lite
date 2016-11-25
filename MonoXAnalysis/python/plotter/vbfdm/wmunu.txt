@@ -9,10 +9,13 @@ photonveto: nGamma15V==0
 tauveto: nTauClean18V==0
 btagveto: nBTag20==0
 recoil: recoil_pt > 200
+#recoil: metNoMu_pt > 200
 mt: mt_2(LepGood1_pt,LepGood1_phi,met_pt,met_phi) < 160 
 #dphijm: minDphi_jetsMet_withNjets(nJetClean, 50, JetClean_phi, metNoMu_phi) > 2.3 && minDphi_jetsMet_withNjets(nJetClean, 50, JetClean_phi, metNoMu_phi) < 3.15
-dphijm: abs(dphijm) > 2.3 && abs(dphijm) < 3.15
-jets: JetClean1_pt > 80 && JetClean2_pt > 70 && abs(JetClean1_eta) < 4.7 && abs(JetClean2_eta) < 4.7 && monojetIDcentralJet(JetClean1_leadClean, JetClean1_eta) && goodJetCleanNHF_eta3to3p2(JetClean1_eta, JetClean1_phi, JetFwd1_neHEF, JetFwd1_eta, JetFwd1_phi, JetFwd2_neHEF, JetFwd2_eta, JetFwd2_phi)
-mass2j: mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.) > 1100
-deta2j: abs(JetClean1_eta-JetClean2_eta) > 3.6
+dphijm: abs(dphijm) > 2.0 && abs(dphijm) < 3.15
+#jets: JetClean1_pt > 80 && JetClean2_pt > 70 && abs(JetClean1_eta) < 4.7 && abs(JetClean2_eta) < 4.7 && monojetIDcentralJet(JetClean1_leadClean, JetClean1_eta) && goodJetCleanNHF_eta3to3p2(JetClean1_eta, JetClean1_phi, JetFwd1_neHEF, JetFwd1_eta, JetFwd1_phi, JetFwd2_neHEF, JetFwd2_eta, JetFwd2_phi)
+jets: JetClean1_pt > 80 && JetClean2_pt > 50 && abs(JetClean1_eta) < 4.7 && abs(JetClean2_eta) < 4.7 && monojetIDcentralJet(JetClean1_leadClean, JetClean1_eta)
 vbfjets: JetClean1_eta * JetClean2_eta < 0
+mass2j: mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.) > 1000
+deta2j: abs(JetClean1_eta-JetClean2_eta) > 3.5
+

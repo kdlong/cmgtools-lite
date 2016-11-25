@@ -7,6 +7,8 @@ from os.path import dirname,basename
 from CMGTools.TTHAnalysis.tools.plotDecorations import *
 from CMGTools.MonoXAnalysis.plotter.mcPlots import *
 
+lumi = 12.9
+
 mergeMap = { 
 #    "ttH_hww" : "ttH",
 #    "ttH_hzz" : "ttH",
@@ -37,7 +39,7 @@ if __name__ == "__main__":
     if "HOSTNAME" in os.environ:  
         if os.environ["HOSTNAME"] == "pccmsrm29.cern.ch":
             options.path = "/u2/emanuele/TREES_MET_80X_V4/" if region in ['SR','ZM','WM'] else "/u2/emanuele/TREES_1LEP_80X_V4/"
-    options.lumi = 24.47
+    options.lumi = lumi
     mcap = MCAnalysis(args[0],options)
     basedir = dirname(args[1]);
     infile = ROOT.TFile(args[1]);
