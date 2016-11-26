@@ -117,10 +117,8 @@ class Analysis:
             'SR': ['puw','SF_trigmetnomu','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
             'ZM' : ['puw','SF_trigmetnomu','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
             'ZE'   : ['puw','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
-            #'ZE'   : ['puw','SF_trigmetnomu','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
             'WM' : ['puw','SF_trigmetnomu','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
             'WE'  : ['puw','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
-            #'WE'  : ['puw','SF_trigmetnomu','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
             'gjets' : ['puw','SF_BTag','SF_NLO_QCD','SF_NLO_EWK']
             }
         if use_TREES_MET_for_electrons:
@@ -128,15 +126,12 @@ class Analysis:
                 #electron regions with trigmetnomu are a temporary solution for comparison with VBF H analysis, that use metnoMu also in W(ev)
                 'SR': ['puw','SF_trigmetnomu','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
                 'ZM' : ['puw','SF_trigmetnomu','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
-                'ZE'   : ['puw','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
                 'ZE'   : ['puw','SF_trigmetnomu','SF_LepTightLoose','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
                 'WM' : ['puw','SF_trigmetnomu','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
-                'WE'  : ['puw','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
                 'WE'  : ['puw','SF_trigmetnomu','SF_LepTight','SF_BTag','SF_NLO_QCD','SF_NLO_EWK'],
                 'gjets' : ['puw','SF_BTag','SF_NLO_QCD','SF_NLO_EWK']
                 }
-
-
+        
         weightsString = " -W '" + "*".join(weights[region]) + "'"
 
         self.cuts = cuts[region] 
@@ -190,6 +185,7 @@ if __name__ == "__main__":
     #sel_steps = {'v_presel':'btagveto', 'vbfjets':'vbfjets', 'full_sel':'dphihmT'}
     #sel_steps = {'vbfjets':'vbfjets', 'full_sel':'dphihmT'}
     sel_steps = {'vbfjets':'vbfjets'}
+    #sel_steps = {'full_sel':'all_cut'}
     exclude_plots = {'v_presel': ['jcentral_eta','jfwd_eta','detajj','detajj_fullsel','mjj','mjj_fullsel'],
                      'vbfjets': ['jcentral_eta','jfwd_eta'],
                      'full_sel': ['detajj','mjj','nvtx','rho']
@@ -205,6 +201,7 @@ if __name__ == "__main__":
             for s,v in sel_steps.iteritems():
                 print "#===> Making selection / plots for ",("signal" if CR=='SR' else "control")," region",options.region," at selection step: ",s, "(cut =",v,")"
                 options.upToCut = v
+                #options.upToCut = (v if v!='all_cut' else '')
                 options.pdir = pdirbase+"/"+CR+("/" if CR=='SR' else "CR/")+s
                 mcpOpts = ['--xP '+','.join(exclude_plots[s]), '--rebin '+str(rebinFactor[s])]
                 if len(options.plotselect)>0: mcpOpts += ['--sP '+','.join(options.plotselect)]
@@ -217,7 +214,7 @@ if __name__ == "__main__":
     elif len(options.propSystToVar)>0:
         pdirbase = options.pdir if options.pdir else "templates"
         processesToProp = {
-            'SR': ['ZNuNu','W'],
+            'SR': ['ZNuNu','W','EWKZNuNu','EWKW'],
             'ZM' : ['ZLL','EWKZLL'],
             'ZE' : ['ZLL','EWKZLL'],
             'WM' : ['W','EWKW'],
@@ -228,7 +225,7 @@ if __name__ == "__main__":
             options.region = reg
             for s,v in sel_steps.iteritems():
                 print "#===> Propagating systematics for control region ",options.region," at selection step: ",s, "(cut =",v,")"
-                options.upToCut = s
+                options.upToCut = v
                 options.pdir = pdirbase + "/" + s
                 mcpOpts = ['--rebin '+str(rebinFactor[s])]
                 procs = ','.join(processesToProp[reg])
@@ -248,7 +245,12 @@ if __name__ == "__main__":
             'Znunu_from_Zee'   : ['ZNuNu','ZLL','SR','ZE'],
             'W_from_Wmumu' : ['W','W','SR','WM'],
             'W_from_Wenu' : ['W','W','SR','WE'],
-            'Z_from_Wlnu' : ['ZNuNu','W','SR','SR']
+            'Z_from_Wlnu' : ['ZNuNu','W','SR','SR'],
+            'EWK_Znunu_from_Zmumu' : ['EWKZNuNu','EWKZLL','SR','ZM'],
+            'EWK_Znunu_from_Zee'   : ['EWKZNuNu','EWKZLL','SR','ZE'],
+            'EWK_W_from_Wmumu' : ['EWKW','EWKW','SR','WM'],
+            'EWK_W_from_Wenu' : ['EWKW','EWKW','SR','WE'],
+            'EWK_Z_from_Wlnu' : ['EWKZNuNu','EWKW','SR','SR']
             }
         
         for s,v in sel_steps.iteritems():
@@ -273,14 +275,14 @@ if __name__ == "__main__":
              
                 systs={}
              
-                if den_proc=='ZLL' or den_proc=='W':
+                if den_proc=='ZLL' or den_proc=='W' or den_proc=='EWKZLL' or den_proc=='EWKW':
                     systs[(den_proc,'CR','up')]=systsUpL
                     systs[(den_proc,'CR','down')]=systsDownL
                 elif den_proc=='GJetsHT':
                     systs[(den_proc,'CR','up')]=systsUpG
                     systs[(den_proc,'CR','down')]=systsDownG
                 else:
-                    print "ERROR! Numerator processes can be only ZLL or W or GJetsHT"
+                    print "ERROR! Denominator processes can be only ZLL or W or EWKZLL or EWKW or GJetsHT"
                     exit()
              
                 if num_proc=='ZNuNu':
@@ -297,8 +299,22 @@ if __name__ == "__main__":
                     else:
                         print "Num is ",num_proc," so only W is allowed as denominator"
                         exit()
+                elif num_proc=='EWKZNuNu':
+                    systs[(num_proc,'SR','up')]=[]
+                    systs[(num_proc,'SR','down')]=[]
+                    if den_proc=='EWKZLL': title = 'R^{EWK}_{Z}'
+                    elif den_proc=='EWKW': title = 'R^{EWK}_{Z/W}'
+                    elif den_proc=='GJetsHT': title = 'R_{#gamma}'
+                    else: exit()
+                elif num_proc=='EWKW':
+                    systs[(num_proc,'SR','up')]=[]
+                    systs[(num_proc,'SR','down')]=[]
+                    if den_proc=='EWKW': title = 'R^{EWK}_{W}'
+                    else:
+                        print "Num is ",num_proc," so only W is allowed as denominator"
+                        exit()
                 else:
-                    print "ERROR! Numerator processes can be only ZNuNu or W"
+                    print "ERROR! Numerator processes can be only ZNuNu or W or EWKZNuNu or EWKW"
                     exit()
              
              
