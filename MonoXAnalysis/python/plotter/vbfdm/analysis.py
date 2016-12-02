@@ -182,15 +182,22 @@ if __name__ == "__main__":
     parser.add_option("--tF","--transferFactor", dest="transferFactor",  type="string", default="", help='Make the transfer factors from control regions to signal region. Take the templates for the specified variable.')
     (options, args) = parser.parse_args()
 
+    # if the user has passed the -U option, use that un the following
+    if options.upToCut:
+        #print "CHECK"
+        sel_steps = {'user_sel':options.upToCut}
+        #sel_steps = {options.upToCut:options.upToCut}
+    else:
     #sel_steps = {'v_presel':'btagveto', 'vbfjets':'vbfjets', 'full_sel':'dphihmT'}
     #sel_steps = {'vbfjets':'vbfjets', 'full_sel':'dphihmT'}
-    sel_steps = {'vbfjets':'vbfjets'}
-    #sel_steps = {'full_sel':'all_cut'}
+        sel_steps = {'vbfjets':'vbfjets'}
     exclude_plots = {'v_presel': ['jcentral_eta','jfwd_eta','detajj','detajj_fullsel','mjj','mjj_fullsel'],
                      'vbfjets': ['jcentral_eta','jfwd_eta'],
-                     'full_sel': ['detajj','mjj','nvtx','rho']
+                     'full_sel': ['detajj','mjj','nvtx','rho'],
+                     'user_sel': ['jcentral_eta','jfwd_eta'],
+                     #options.upToCut: ['jcentral_eta','jfwd_eta']
                      }
-    rebinFactor = {'v_presel':1, 'vbfjets':1, 'full_sel':1}
+    rebinFactor = {'v_presel':1, 'vbfjets':1, 'full_sel':1, 'user_sel':1}
     ctrl_regions = ['ZM','WM','ZE','WE','SR']  # N.B. it has also SR to loop on any region. At first there were only the real CRs
 
     if options.fullControlRegions:
@@ -201,12 +208,13 @@ if __name__ == "__main__":
             for s,v in sel_steps.iteritems():
                 print "#===> Making selection / plots for ",("signal" if CR=='SR' else "control")," region",options.region," at selection step: ",s, "(cut =",v,")"
                 options.upToCut = v
-                #options.upToCut = (v if v!='all_cut' else '')
-                options.pdir = pdirbase+"/"+CR+("/" if CR=='SR' else "CR/")+s
+                #options.upToCut = (v if v!='all' else '')
+                options.pdir = pdirbase+"/"+CR+("/" if CR=='SR' else "CR/")+v
                 mcpOpts = ['--xP '+','.join(exclude_plots[s]), '--rebin '+str(rebinFactor[s])]
                 if len(options.plotselect)>0: mcpOpts += ['--sP '+','.join(options.plotselect)]
-                if CR!='WE': mcpOpts += ['--xp QCD'] # too large uncertainty
-                if CR=='SR': mcpOpts += ['--showIndivSigShapes','--xp data,QCD','--rebin 2']
+                # if CR!='WE': mcpOpts += ['--xp QCD'] # too large uncertainty
+                # if CR=='SR': mcpOpts += ['--showIndivSigShapes','--xp data,QCD','--rebin 2']
+                if CR=='SR': mcpOpts += ['--showIndivSigShapes','--xp data','--rebin 1']
                 analysis = Analysis(options,mcpOpts)
                 analysis.runOne()        
 
@@ -226,12 +234,12 @@ if __name__ == "__main__":
             for s,v in sel_steps.iteritems():
                 print "#===> Propagating systematics for control region ",options.region," at selection step: ",s, "(cut =",v,")"
                 options.upToCut = v
-                options.pdir = pdirbase + "/" + s
+                options.pdir = pdirbase + "/" + v
                 mcpOpts = ['--rebin '+str(rebinFactor[s])]
                 procs = ','.join(processesToProp[reg])
                 print "# propagating systematics to processes ",procs, " in the region ",reg
                 analysis = Analysis(options,mcpOpts)
-                myout = pdirbase+"/"+s+"/templates_"+options.propSystToVar+'_'+reg+'.root'
+                myout = pdirbase+"/"+v+"/templates_"+options.propSystToVar+'_'+reg+'.root'
                 analysis.runOneSyst(options.propSystToVar,procs,myout)
 
 
@@ -258,9 +266,9 @@ if __name__ == "__main__":
             for k,tf in TFs.iteritems():
                 num_proc=tf[0]; den_proc=tf[1]
                 outdir = options.pdir if options.pdir else 'templates'
-                file_prefix = outdir+('/'+s+'/templates_'+options.transferFactor+'_')
+                file_prefix = outdir+('/'+v+'/templates_'+options.transferFactor+'_')
                 num_file=file_prefix+tf[2]+'.root'; den_file=file_prefix+tf[3]+'.root'
-                num_sel='SR'; den_sel='CR' if k!='Z_from_Wlnu' else 'SR'
+                num_sel='SR'; den_sel='CR' if (k!='Z_from_Wlnu' and k!='EWK_Z_from_Wlnu') else 'SR'
      
                 print "# computing transfer factor: ",k, " reading ", num_sel, " histos from ",num_file," and ",den_sel, " histos from ",den_file
         
@@ -318,7 +326,7 @@ if __name__ == "__main__":
                     exit()
              
              
-                outname = outdir+"/"+s+"/rfactors_"+options.transferFactor+"_"+num_proc+num_sel+"_Over_"+tf[3]+den_sel+".root"
+                outname = outdir+"/"+v+"/rfactors_"+options.transferFactor+"_"+num_proc+num_sel+"_Over_"+tf[3]+den_sel+".root"
                 outfile = rt.TFile(outname,"RECREATE")
              
                 rfm = RFactorMaker(options.transferFactor,num_file,den_file,num_proc,den_proc,systs)
