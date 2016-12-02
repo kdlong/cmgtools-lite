@@ -80,7 +80,10 @@ def addCorrelatedShapeFromSR(process,processSR,var,thisregion,correlatedRegion,w
         rbin_rrv = ROOT.RooRealVar('r_'+process+'_'+thisregion+'_bin'+str(b),"",h_alphahist_fullerr.GetBinContent(b))
         rbins.append(rbin_rrv)
         # nuisance parameter in the fit limited to +/-5 sigma
-        extreme = min(5.,h_alphahist_fullerr.GetBinContent(b)/h_alphahist_fullerr.GetBinError(b))
+        if h_alphahist_fullerr.GetBinError(b) != 0:
+            extreme = min(5.,h_alphahist_fullerr.GetBinContent(b)/h_alphahist_fullerr.GetBinError(b))
+        else:
+            extreme = 5.
         rerrbin_rrv = ROOT.RooRealVar(process+'_'+thisregion+'_bin'+str(b)+'_Runc',"",0,-extreme,extreme)
         rerrbins.append(rerrbin_rrv)
 
@@ -92,7 +95,11 @@ def addCorrelatedShapeFromSR(process,processSR,var,thisregion,correlatedRegion,w
         formula_comp.add(rbins[b-1])
         formula_comp.add(rerrbins[b-1])
         # make the formula of the transfer from SR including the total error on alpha
-        formula_toterr = "@0/(@1*abs(1+"+str(h_alphahist_fullerr.GetBinError(b)/h_alphahist_fullerr.GetBinContent(b))+"*@2))"
+        #temporary patch to protect against empty bins (can be that the range is wider than the selection window
+        if h_alphahist_fullerr.GetBinContent(b) != 0:
+            formula_toterr = "@0/(@1*abs(1+"+str(h_alphahist_fullerr.GetBinError(b)/h_alphahist_fullerr.GetBinContent(b))+"*@2))"
+        else:
+            formula_toterr = "@0/(@1*abs(1+@2))"
 
         bin_rfv = ROOT.RooFormulaVar(process+'_'+thisregion+'_bin'+str(b),"",formula_toterr, formula_comp)
         bins.append(bin_rfv)
