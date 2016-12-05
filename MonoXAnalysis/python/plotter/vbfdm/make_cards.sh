@@ -56,27 +56,33 @@ SYST="vbfdm/systsEnv.txt"
 
 VARIABLE=""
 
-VARNAME="detajj_fullsel"
-if [[ "$PRESEL" == "full_sel" ]]; then 
-    VARIABLE="'abs(JetClean1_eta-JetClean2_eta)' '[1,1.5,2,2.5,3,3.5,4,4.5,5,6,10]'"
-else
-    VARIABLE="'abs(JetClean1_eta-JetClean2_eta)' '[0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,6,10]'"
-fi;
+# VARNAME="detajj_fullsel"
+# if [[ "$PRESEL" == "full_sel" ]]; then 
+#     VARIABLE="'abs(JetClean1_eta-JetClean2_eta)' '[1,1.5,2,2.5,3,3.5,4,4.5,5,6,10]'"
+# else
+#     VARIABLE="'abs(JetClean1_eta-JetClean2_eta)' '[0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,6,10]'"
+# fi;
 
-VARNAME="mjj_fullsel"
-if [[ "$PRESEL" == "full_sel" ]]; then
-    VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2250,2500,2750,3000,3500,4000]'"
-else
-    VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[0,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2250,2500,2750,3000,3500,4000]'"
-fi
+# VARNAME="mjj_fullsel"
+# if [[ "$PRESEL" == "full_sel" ]]; then
+#     VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2250,2500,2750,3000,3500,4000]'"
+# else
+#     VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[0,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2250,2500,2750,3000,3500,4000]'"
+# fi
 
 
 if [[ "$VAR" == "detajj" ]]; then 
     VARNAME="detajj_fullsel"
-    VARIABLE="'abs(JetClean1_eta-JetClean2_eta)' '[0,1,2,2.5,3,3.5,4,4.5,5,6,10]'"
+    #VARIABLE="'abs(JetClean1_eta-JetClean2_eta)' '[0,2.5,3,3.5,4,4.5,5,6,10]'"
+    #VARIABLE="'abs(JetClean1_eta-JetClean2_eta)' '[3.5,4,4.5,5,6,10]'"
+    binning=`cat vbfdm/common_plots.txt | grep -v \#detajj_fullsel | grep detajj_fullsel | awk '{print $4 }'`
+    VARIABLE="'abs(JetClean1_eta-JetClean2_eta)' '${binning}'"
 elif [[ "$VAR" == "mjj" ]]; then 
     VARNAME="mjj_fullsel"
-    VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[500,750,1000,1200,1400,1600,1800,2200,2600,3000,3500,4000]'"
+    #VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[1000,1250,1500,1750,2000,2500,3000]'"
+    #VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[1100,1200,1400,1600,1800,2200,2600,3000,4000]'"
+    binning=`cat vbfdm/common_plots.txt | grep -v \#mjj_fullsel | grep mjj_fullsel | awk '{print $4 }'`
+    VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '${binning}'"
 else
     echo "variable $VAR not availale. Exiting!"; exit;
 fi
