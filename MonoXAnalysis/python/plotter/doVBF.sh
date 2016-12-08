@@ -7,9 +7,10 @@ var="detajj"
 #fitdir="mjj_mjj1000_deta3p0_dphijm2p0"
 storeDir="VBF_shape_study_24p5fb"         # name of directory containing all the tests you would do. You can specify the luminosity used in the name
 fitdir="detajj_mjj1000_deta3p0_dphijm2p0"   # name of dir that contains the output
-other_options=""  # "1bin" for cut and count ike test, otherwise keep empty for shape analysis with many bins
+other_options=""  # "1bin" for cut and count like test, otherwise keep empty for shape analysis with many bins
 combinedir="/afs/cern.ch/work/m/mciprian/combine/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/myTest/${storeDir}/${fitdir}"  # dir where you run combine
-plotterDirPath="/afs/cern.ch/work/m/mciprian/monoJet_new/CMSSW_8_0_19/src/CMGTools/MonoXAnalysis/python/plotter"
+plotterDirPath="${CMSSW_BASE}/src/CMGTools/MonoXAnalysis/python/plotter"
+wwwPath="${HOME}/www/vbfHiggsToInv/80X/heppy"   # web cern directory to store outputs at the end
 
 test -d templates/ && rm -r templates/
 
@@ -39,5 +40,5 @@ cd  ${plotterDirPath}/
 eval `scramv1 runtime -sh`
 source doAllRegionPostFit.sh ${uptothiscut} ${var4shape} ${lumi}
 
-mkdir -p ${HOME}/www/vbfHiggsToInv/80X/heppy/${storeDir}/${fitdir}/
-cp -r templates/ ${HOME}/www/vbfHiggsToInv/80X/heppy/${storeDir}/${fitdir}/
+mkdir -p ${wwwPath}/${storeDir}/${fitdir}/
+cp -r templates/ ${wwwPath}/${storeDir}/${fitdir}/
