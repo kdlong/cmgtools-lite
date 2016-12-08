@@ -7,7 +7,8 @@ from os.path import dirname,basename
 from CMGTools.TTHAnalysis.tools.plotDecorations import *
 from CMGTools.MonoXAnalysis.plotter.mcPlots import *
 
-lumi = 12.9
+#lumi = 12.9
+#lumi = 24.5
 
 mergeMap = { 
 #    "ttH_hww" : "ttH",
@@ -22,8 +23,8 @@ mergeMap = {
 }
 
 swapMap = {
-    "ZM" : { "ZLL" : "ZNuNu" },
-    "ZE" : { "ZLL" : "ZNuNu" },
+    "ZM" : { "ZLL" : "ZNuNu", "EWKZLL" : "EWKZNuNu" },
+    "ZE" : { "ZLL" : "ZNuNu", "EWKZLL" : "EWKZNuNu" },
     "WM" : { },
     "WE" : { },
 }
@@ -31,10 +32,11 @@ swapMap = {
 options = None
 if __name__ == "__main__":
     from optparse import OptionParser
-    parser = OptionParser(usage="%prog [options] mca.txt plotfile varname mlfile region")
+    parser = OptionParser(usage="%prog [options] mca.txt plotfile varname mlfile region lumi")
     addPlotMakerOptions(parser)
     (options, args) = parser.parse_args()
     region = args[4];
+    lumi = args[5];
     options.path = "/data1/emanuele/monox/TREES_MET_80X_V4/" if region in ['SR','ZM','WM'] else "/data1/emanuele/monox/TREES_1LEP_80X_V4/"
     if "HOSTNAME" in os.environ:  
         if os.environ["HOSTNAME"] == "pccmsrm29.cern.ch":
@@ -51,6 +53,7 @@ if __name__ == "__main__":
     ROOT.gStyle.SetOptStat(0)
     ROOT.gStyle.SetPaperSize(20.,25.)
     for O,MLD in ("prefit","prefit"), ("postfit_b","fit_b"), ("postfit_s","fit_s"):
+      print "shapes_%s" % MLD
       mldir  = mlfile.GetDirectory("shapes_"+MLD);
       if not mldir: raise RuntimeError, mlfile
       outfile = ROOT.TFile(basedir + "/"+O+"_" + basename(args[2]), "RECREATE")
@@ -91,6 +94,7 @@ if __name__ == "__main__":
       #argset.Print("V")
       for p in processes:
         pout = (swapMap[region])[p] if p in swapMap[region] else p
+        #print "process %s pout %s" % (p,pout)
         #h = infile.Get(var+"_"+pout)
         #if not h: continue
         if pout not in pyields: pyields[pout] = [0,0]
