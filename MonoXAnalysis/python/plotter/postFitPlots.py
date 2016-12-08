@@ -36,12 +36,12 @@ if __name__ == "__main__":
     addPlotMakerOptions(parser)
     (options, args) = parser.parse_args()
     region = args[4];
-    lumi = args[5];
+    luminosity = args[5];
     options.path = "/data1/emanuele/monox/TREES_MET_80X_V4/" if region in ['SR','ZM','WM'] else "/data1/emanuele/monox/TREES_1LEP_80X_V4/"
     if "HOSTNAME" in os.environ:  
         if os.environ["HOSTNAME"] == "pccmsrm29.cern.ch":
             options.path = "/u2/emanuele/TREES_MET_80X_V4/" if region in ['SR','ZM','WM'] else "/u2/emanuele/TREES_1LEP_80X_V4/"
-    options.lumi = lumi
+    options.lumi = float(luminosity)
     mcap = MCAnalysis(args[0],options)
     basedir = dirname(args[1]);
     infile = ROOT.TFile(args[1]);
