@@ -7,7 +7,7 @@ import ROOT as rt
 from optparse import OptionParser
 from CMGTools.MonoXAnalysis.plotter.monojet.prepareRFactors import RFactorMaker
 
-lumiToUse = 12.9  # temporary solution, it would be better to pass it as an option
+#lumiToUse = 12.9  # temporary solution, it would be better to pass it as an option
 read_u2_mciprian = False
 use_TREES_MET_for_electrons = False
 
@@ -43,7 +43,7 @@ class Analysis:
             self.MCA='monojet/mca-80X-Gj.txt'        
      
         corey = 'mcAnalysis.py ' if len(options.pdir)==0 else 'mcPlots.py '
-        coreopt = ' -P '+T+' --s2v -j 6 -l ' + str(lumiToUse) + ' -G'
+        coreopt = ' -P '+T+' --s2v -j 6 -l ' + str(options.lumi) + ' -G'
         plotopt = ' -f --poisson --pdir ' + options.pdir
         if region != 'SR': plotopt += ' --showRatio --maxRatioRange 0.5 1.5 --fixRatioRange '
         anaOpts += [coreopt]
@@ -171,6 +171,7 @@ if __name__ == "__main__":
 
     parser = OptionParser(usage=usage)
     parser.add_option("-r", "--region", dest="region", default='SR', help='Find the yields for this phase space')
+    parser.add_option("-l", "--lumi",   dest="lumi",   type="float", default="12.9", help="Luminosity (in 1/fb)");
     parser.add_option("-d", "--dry-run", dest="dryrun", action="store_true", default=False, help='Do not run the commands, just print them')
     parser.add_option("-s", "--synch", dest="synch", action="store_true", default=False, help='Do not apply any scale factor, bare yields')
     parser.add_option("-p", "--pdir", dest="pdir", type="string", default="", help='If given, make the plots and put them in the specified directory')
@@ -337,7 +338,7 @@ if __name__ == "__main__":
                 hists_statonly[(den_proc,'CR')] = rfm.hists_nominal[(den_proc,'CR','nominal')]
                 rfac_statonly = rfm.computeRFactors(hists_statonly,outfile,"stat")
                 name = outname.replace(".root","")
-                lumi = lumiToUse
+                lumi = options.lumi
                 rfm.makePlot(rfac_statonly,rfac_full,name,lumi,title,[])
              
                 outfile.Close()
