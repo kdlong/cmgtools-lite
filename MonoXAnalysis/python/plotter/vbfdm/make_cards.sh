@@ -55,6 +55,7 @@ OPTIONS=" --s2v -j $J -l ${LUMI} -f -X trigger -U ${PRESEL} "
 SYST="vbfdm/systsEnv.txt"
 
 VARIABLE=""
+formula=""
 
 # VARNAME="detajj_fullsel"
 # if [[ "$PRESEL" == "full_sel" ]]; then 
@@ -76,16 +77,24 @@ if [[ "$VAR" == "detajj" ]]; then
     #VARIABLE="'abs(JetClean1_eta-JetClean2_eta)' '[0,2.5,3,3.5,4,4.5,5,6,10]'"
     #VARIABLE="'abs(JetClean1_eta-JetClean2_eta)' '[3.5,4,4.5,5,6,10]'"
     binning=`cat vbfdm/common_plots.txt | grep -v \#detajj_fullsel | grep detajj_fullsel | awk '{print $4 }'`
-    VARIABLE="'abs(JetClean1_eta-JetClean2_eta)' '${binning}'"
+    formula="abs(JetClean1_eta-JetClean2_eta)"
 elif [[ "$VAR" == "mjj" ]]; then 
     VARNAME="mjj_fullsel"
     #VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[1000,1250,1500,1750,2000,2500,3000]'"
     #VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '[1100,1200,1400,1600,1800,2200,2600,3000,4000]'"
     binning=`cat vbfdm/common_plots.txt | grep -v \#mjj_fullsel | grep mjj_fullsel | awk '{print $4 }'`
-    VARIABLE="'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)' '${binning}'"
+    formula="mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.)"
 else
     echo "variable $VAR not availale. Exiting!"; exit;
 fi
+
+if [[ "$2" == "1bin" ]]; then
+    # with 1 binning we have binning = 1,XXX,YYY ; must get [XXX,YYY]	
+    # symbol # removes the shortest pattern matching '1,' from the beginning 
+    binning="[${binning#1,}]"
+fi
+
+VARIABLE="'${formula}' '${binning}'"
 
 # VARNAME="detajj_mjj_binned"
 # if [[ "$PRESEL" == "full_sel" ]]; then
