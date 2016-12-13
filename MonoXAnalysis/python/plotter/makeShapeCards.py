@@ -53,7 +53,7 @@ class SafeWorkspaceImporter():
 def addCorrelatedShape(process,var,region,workspace,hist):
     bins = []
     for b in range(1,hist.GetNbinsX()+1):
-        bin_rrv = ROOT.RooRealVar(process+'_'+region+'_bin'+str(b),"",hist.GetBinContent(b), 0., hist.GetBinContent(b)*5.0)
+        bin_rrv = ROOT.RooRealVar(process+'_'+region+'_bin'+str(b),"",hist.GetBinContent(b), 0., hist.GetBinContent(b)*3.0)
         bins.append(bin_rrv)
 
     # for some ROOT memory handling, adding the RooRealVars to the RooArgList after creation doesn't work
@@ -74,16 +74,16 @@ def addCorrelatedShapeFromSR(process,processSR,var,thisregion,correlatedRegion,w
 
     crbins = []; rbins = []; rerrbins = [];
     for b in range(1,hist.GetNbinsX()+1):
-        crbin_rrv = ROOT.RooRealVar(processSR+'_'+correlatedRegion+'_bin'+str(b),"",hist.GetBinContent(b), 0., hist.GetBinContent(b)*5.0)
+        crbin_rrv = ROOT.RooRealVar(processSR+'_'+correlatedRegion+'_bin'+str(b),"",hist.GetBinContent(b), 0., hist.GetBinContent(b)*3.0)
         crbins.append(crbin_rrv)
         # central value of the transfer factor
         rbin_rrv = ROOT.RooRealVar('r_'+process+'_'+thisregion+'_bin'+str(b),"",h_alphahist_fullerr.GetBinContent(b))
         rbins.append(rbin_rrv)
-        # nuisance parameter in the fit limited to +/-5 sigma
+        # nuisance parameter in the fit limited to +/-3 sigma
         if h_alphahist_fullerr.GetBinError(b) != 0:
-            extreme = min(5.,h_alphahist_fullerr.GetBinContent(b)/h_alphahist_fullerr.GetBinError(b))
+            extreme = min(3.,h_alphahist_fullerr.GetBinContent(b)/h_alphahist_fullerr.GetBinError(b))
         else:
-            extreme = 5.
+            extreme = 3.
         rerrbin_rrv = ROOT.RooRealVar(process+'_'+thisregion+'_bin'+str(b)+'_Runc',"",0,-extreme,extreme)
         rerrbins.append(rerrbin_rrv)
 
