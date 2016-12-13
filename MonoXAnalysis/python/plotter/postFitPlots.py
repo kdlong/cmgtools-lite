@@ -7,9 +7,6 @@ from os.path import dirname,basename
 from CMGTools.TTHAnalysis.tools.plotDecorations import *
 from CMGTools.MonoXAnalysis.plotter.mcPlots import *
 
-#lumi = 12.9
-#lumi = 24.5
-
 mergeMap = { 
 #    "ttH_hww" : "ttH",
 #    "ttH_hzz" : "ttH",
@@ -36,12 +33,13 @@ if __name__ == "__main__":
     addPlotMakerOptions(parser)
     (options, args) = parser.parse_args()
     region = args[4];
-    luminosity = args[5];
     options.path = "/data1/emanuele/monox/TREES_MET_80X_V4/" if region in ['SR','ZM','WM'] else "/data1/emanuele/monox/TREES_1LEP_80X_V4/"
     if "HOSTNAME" in os.environ:  
         if os.environ["HOSTNAME"] == "pccmsrm29.cern.ch":
             options.path = "/u2/emanuele/TREES_MET_80X_V4/" if region in ['SR','ZM','WM'] else "/u2/emanuele/TREES_1LEP_80X_V4/"
-    options.lumi = float(luminosity)
+    #following 2 lines are not needed: lumi can be passed with option -l XXX, can also pass other options accepted by mcPlots.py
+    #luminosity = args[5];
+    #options.lumi = float(luminosity)
     mcap = MCAnalysis(args[0],options)
     basedir = dirname(args[1]);
     infile = ROOT.TFile(args[1]);
