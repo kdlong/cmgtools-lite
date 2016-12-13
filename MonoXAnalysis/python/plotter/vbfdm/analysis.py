@@ -49,7 +49,24 @@ class Analysis:
         anaOpts += [coreopt]
      
         if options.upToCut: anaOpts.append('-U '+options.upToCut)
-     
+        # careful below: these options are lists, not string, need to cast
+        # also, -X takes 1 argument, so we will have -X cut1 -X cut2 ...
+        # -R takes 3 argument, so str(x) would be an ntuple with 3 members: need to make a string with 3 words separated by space 
+        if options.cutsToExclude: anaOpts.append(' -X '+ str(" -X ".join(str(x) for x in options.cutsToExclude)))
+        if options.cutsToAdd: 
+            for ntpl in options.cutsToAdd:                
+                #print str(ntpl)
+                string_option = str(ntpl[0]) + " " + str(ntpl[1]) + " '" + str(ntpl[2]) + "' "
+                #print string_option
+                anaOpts.append(' -A ' + string_option)
+        if options.cutsToReplace: 
+            for ntpl in options.cutsToReplace:
+                #print str(ntpl)
+                string_option = str(ntpl[0]) + " " + str(ntpl[1]) + " '" + str(ntpl[2]) + "' "
+                #print string_option
+                anaOpts.append(' -R ' + string_option)
+
+
         # if region in ['SR']:
         #     fev = ' -F mjvars/t \"'+T+'/friends_SR/evVarFriend_{cname}.root\" '
         # elif region in ['ZM','WM']:
@@ -177,6 +194,9 @@ if __name__ == "__main__":
     parser.add_option("-p", "--pdir", dest="pdir", type="string", default="", help='If given, make the plots and put them in the specified directory')
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
     parser.add_option("-U", "--up-to-cut",      dest="upToCut",   type="string", help="Run selection only up to the cut matched by this regexp, included.")
+    parser.add_option("-X", "--exclude-cut", dest="cutsToExclude", action="append", default=[], help="Cuts to exclude (regexp matching cut name), can specify multiple times.") 
+    parser.add_option("-R", "--replace-cut", dest="cutsToReplace", action="append", default=[], nargs=3, help="Cuts to invert (regexp of old cut name, new name, new cut); can specify multiple times.")
+    parser.add_option("-A", "--add-cut",     dest="cutsToAdd",     action="append", default=[], nargs=3, help="Cuts to insert (regexp of cut name after which this cut should go, new name, new cut); can specify multiple times.")  
     parser.add_option("--twodim", dest="twodim", action="store_true", help="run the two-dimensional analysis")
     parser.add_option("--fullControlRegions", dest="fullControlRegions", action="store_true", default=False, help='Do not run only one mcAnalysis/mCPlots, do all the control regions')
     parser.add_option("--propSystToVar", dest="propSystToVar", type="string", default="", help='Make the templates for a given variable, nominal and systematic alternatives')
