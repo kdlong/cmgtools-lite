@@ -5,8 +5,8 @@ var4shape="mjj_fullsel"
 var="mjj"
 fitdir="mjj_mjj1000_deta3p5_dphijm2p0"  # name of dir that contains the output
 
-lumi="12.9"
-storeDir="VBF_shape_study_12p9fb"         # name of directory containing all the tests you would do. You can specify the luminosity used in the name
+lumi="24.5"
+storeDir="VBF_shape_study_24p5fb"         # name of directory containing all the tests you would do. You can specify the luminosity used in the name
  
 
 other_options_make_cards=""  # "1bin" for cut and count like test, otherwise keep empty for shape analysis with many bins
@@ -15,14 +15,14 @@ combinedir="/afs/cern.ch/work/m/mciprian/combine/CMSSW_7_4_7/src/HiggsAnalysis/C
 plotterDirPath="${CMSSW_BASE}/src/CMGTools/MonoXAnalysis/python/plotter"
 wwwPath="${HOME}/www/vbfHiggsToInv/80X/heppy"   # web cern directory to store outputs at the end
 
-#analysis_addCut=" -A skim ICHEP_DATA 'run < 276811 || !isData'"
+#analysis_addCut=" -A skim ICHEP_data 'run < 276811 || !isData'"
 analysis_addCut=""
 # -R deta2j deta2j 'abs(JetClean1_eta-JetClean2_eta) > 3.5'
 # -R dphijm dphijm 'abs(dphijm) > 2.0 && abs(dphijm) < 3.15'
 # -R mass2j mass2j 'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.) > 500'
 #analysis_changeCut=" -R mass2j mass2j 'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.) > 500' -R deta2j deta2j 'abs(JetClean1_eta-JetClean2_eta) > 3.5' "
-analysis_changeCut=" -R deta2j deta2j 'abs(JetClean1_eta-JetClean2_eta) > 3.5' -R dphijm dphijm 'abs(dphijm) > 2.0 && abs(dphijm) < 3.15' "
-analysis_excludeCut=""
+analysis_changeCut=" -R dphijm dphijm 'abs(dphijm) > 2.0 && abs(dphijm) < 3.15' -R deta2j deta2j 'abs(JetClean1_eta-JetClean2_eta) > 3.5' "
+analysis_excludeCut=" -X ICHEP_data "
 analysis_cutOptions=" ${analysis_changeCut} ${analysis_addCut} ${analysis_excludeCut} " # use this to pass options to analysis.py, such as -R, -X etc...
 #analysis_cutOptions=""
 
@@ -61,7 +61,7 @@ cp ${plotterDirPath}/templates/cards/${uptothiscut}/${var4shape}/125.0/* ${combi
 
 cd ${combinedir}
 eval `scramv1 runtime -sh`
-combine -M Asymptotic comb.card.txt --run expected 2>&1 >> log_combine.txt  # probably not all the output will be put in the file, don't know why
+combine -M Asymptotic comb.card.txt --run expected > log_combine.txt 2>&1 # probably not all the output will be put in the file, don't know why
 # appending more info in file doesn't work, still trying to understand it. For now, just put the output for limit (previous command)
 #echo " " >> log_combine.txt 2>&1
 #echo " " >> log_combine.txt 2>&1
