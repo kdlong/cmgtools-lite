@@ -54,8 +54,11 @@ if __name__ == "__main__":
       print "shapes_%s" % MLD
       mldir  = mlfile.GetDirectory("shapes_"+MLD);
       if not mldir: raise RuntimeError, mlfile
-      outfile = ROOT.TFile(basedir + "/"+O+"_" + basename(args[2]), "RECREATE")
+      outRootFileName = basedir + "/"+O+"_" + basename(args[2]) + ".root"
+      print "output file: " + outRootFileName
+      outfile = ROOT.TFile(outRootFileName, "RECREATE")
       processes = [p for p in reversed(mcap.listBackgrounds())] + mcap.listSignals()
+      #print str(processes)
 
       hdata = infile.Get(var+"_data")
       stack = ROOT.THStack(var+"_stack","")
@@ -66,6 +69,7 @@ if __name__ == "__main__":
       argset =  mlfile.Get("norm_"+MLD)
       for p in processes:
         pout = (swapMap[region])[p] if p in swapMap[region] else p
+        #print "pout %s   process %s" % (pout,p)
         rvar = argset.find("%s/%s" % (region,pout))
         if not rvar: continue
         h = infile.Get(var+"_"+p)
@@ -76,6 +80,7 @@ if __name__ == "__main__":
         h.SetDirectory(0)
         hpf = mldir.Get("%s/%s" % (region,pout))
         hpf_scale = rvar.getVal()/hpf.Integral()
+        #print str(hpf_scale)
         if not hpf: 
             if h.Integral() > 0 and p not in swapMap[region]: raise RuntimeError, "Could not find post-fit shape for %s" % p
             continue
@@ -83,6 +88,7 @@ if __name__ == "__main__":
         for b in xrange(1, h.GetNbinsX()+1):
             h.SetBinContent(b, hpf.GetBinContent(b)*hpf.GetBinWidth(b))
             h.SetBinError(b, hpf.GetBinError(b)*hpf.GetBinWidth(b))
+            print "bin " + str(b) + ": " + str(h.GetBinContent(b)) + " +/- " + str(h.GetBinError(b))
         plots[p] = h
         h.SetName(var+"_"+p)
         stack.Add(h)
@@ -161,7 +167,7 @@ if __name__ == "__main__":
 #      hSigOutline.Scale(5)
 #      hSigOutline.Draw("HIST SAME")
       leg = doLegend(plots,mcap,corner='TR',textSize=0.045,cutoff=0.0001)
-      leg.SetHeader({'prefit': "Pre-fit", "postfit_b": "Post-fit, #mu = 1", "postfit_s": "Post-fit, #hat{#mu}"}[O]+"\n")
+      leg.SetHeader({'prefit': "Pre-fit", "postfit_b": "Post-fit, #mu = 0", "postfit_s": "Post-fit, #hat{#mu}"}[O]+"\n")
       leg.SetLineColor(0)
 #      leg.AddEntry(hSigOutline, "ttH x 5", "L")
 #      lspam = "CMS Preliminary" #, options.lspam
@@ -183,5 +189,5 @@ if __name__ == "__main__":
       c1.cd()
       c1.Print("%s/%s_%s.png" % (basedir,O,var))
       c1.Print("%s/%s_%s.pdf" % (basedir,O,var))
-      del c1
+      #del c1  # commenting this seems to prevent segmentation fault. It looks like this is not equivalent to delete in C++ (used to delete TCanvas* c1)
       outfile.Close()
