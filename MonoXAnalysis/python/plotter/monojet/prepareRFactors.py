@@ -22,11 +22,15 @@ class RFactorMaker:
 
     def __init__(self, var, srfile, crfile, num, den, systematics):
         self.var = var
+        # keep selections as [SR,CR], cannot have a dictionary with two identical keys (for TF in SR we would have SR/SR, 
+        # but selections can just be seen an alias for numerator and denominator)
         self.selections = ['SR','CR']
         procs = [num,den]
         files = [srfile,crfile]
         histsdic = dict(zip(self.selections,files))
         seldic = dict(zip(self.selections,procs))
+        #print histsdic
+        #print seldic
 
         self.histsUp = {} 
         self.histsDown = {}
@@ -36,7 +40,10 @@ class RFactorMaker:
         self.systs = {}
         for sel,v in histsdic.iteritems():
             proc=seldic[sel]
-            print "Look for proc ",proc," with sel ",sel," in file ",v
+            if [num,den] in [ ['ZNuNu','W'] , ['ZNuNu','EWKZNuNu'] , ['EWKZNuNu','EWKW'] , ['W','EWKW'] ] :
+                print "Look for proc ",proc," with sel SR in file ",v   # in this case it is always SR for both elements 
+            else :
+                print "Look for proc ",proc," with sel ",sel," in file ",v
             self.systs[(proc,sel)] = []
             tfile = ROOT.TFile(v)
             self.histsUp.update(self.getHistosFromFile(tfile,proc,sel,systematics[(proc,sel,'up')]))

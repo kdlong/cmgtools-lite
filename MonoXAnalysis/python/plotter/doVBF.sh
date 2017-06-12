@@ -1,13 +1,34 @@
 #! /bin/bash
 
 uptothiscut="deta2j"
-var4shape="mjj_fullsel"
-var="mjj"
-fitdir="mjj_mjj1000_deta3p5_dphijm2p0"  # name of dir that contains the output
+var="mjj"   # mjj or detajj
+var4shape="${var}_fullsel"
 
 lumi="24.5"
 storeDir="VBF_shape_study_24p5fb"         # name of directory containing all the tests you would do. You can specify the luminosity used in the name
  
+mjjcut=500
+
+detajjcut=3.0
+detajjcut2=3p0
+
+dphijmcut=2.0
+dphijmcut2=2p0
+
+fitdir="${var}_mjj${mjjcut}_detajj${detajjcut2}_dphijm${dphijmcut2}"  # name of dir that contains the output
+
+#get proper file with histogram binning
+comm_plots_file="vbfdm/common_plots.txt"
+if [ "$var" = "mjj" ]; then
+    comm_plots_file="vbfdm/common_plots_txt/${var}_${var}${mjjcut}.txt"
+elif [ "$var" = "detajj" ]; then
+    comm_plots_file="vbfdm/common_plots_txt/${var}_${var}${detajjcut2}.txt"
+else
+    echo "Var not found. Will keep vbfdm/common_plots.txt as it is."
+fi
+
+cp ${comm_plots_file} vbfdm/common_plots.txt
+
 
 other_options_make_cards=""  # "1bin" for cut and count like test, otherwise keep empty for shape analysis with many bins
 
@@ -21,7 +42,7 @@ analysis_addCut=""
 # -R dphijm dphijm 'abs(dphijm) > 2.0 && abs(dphijm) < 3.15'
 # -R mass2j mass2j 'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.) > 500'
 #analysis_changeCut=" -R mass2j mass2j 'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.) > 500' -R deta2j deta2j 'abs(JetClean1_eta-JetClean2_eta) > 3.5' "
-analysis_changeCut=" -R dphijm dphijm 'abs(dphijm) > 2.0 && abs(dphijm) < 3.15' -R deta2j deta2j 'abs(JetClean1_eta-JetClean2_eta) > 3.5' "
+analysis_changeCut=" -R dphijm dphijm 'abs(dphijm) > ${dphijmcut} && abs(dphijm) < 3.15' -R deta2j deta2j 'abs(JetClean1_eta-JetClean2_eta) > ${detajjcut}' -R mass2j mass2j 'mass_2(JetClean1_pt,JetClean1_eta,JetClean1_phi,0.,JetClean2_pt,JetClean2_eta,JetClean2_phi,0.) > ${mjjcut}'"
 analysis_excludeCut=" -X ICHEP_data "
 analysis_cutOptions=" ${analysis_changeCut} ${analysis_addCut} ${analysis_excludeCut} " # use this to pass options to analysis.py, such as -R, -X etc...
 #analysis_cutOptions=""

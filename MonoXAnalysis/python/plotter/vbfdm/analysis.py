@@ -253,7 +253,10 @@ if __name__ == "__main__":
         for reg in all_regions:
             options.region = reg
             for s,v in sel_steps.iteritems():
-                print "#===> Propagating systematics for control region ",options.region," at selection step: ",s, "(cut =",v,")"
+                if reg == "SR":
+                    print "#===> Propagating systematics for signal region at selection step: ",s, "(cut =",v,")"
+                else:
+                    print "#===> Propagating systematics for control region ",options.region," at selection step: ",s, "(cut =",v,")"
                 options.upToCut = v
                 options.pdir = pdirbase + "/" + v
                 mcpOpts = ['--rebin '+str(rebinFactor[s])]
@@ -279,7 +282,10 @@ if __name__ == "__main__":
             'EWK_Znunu_from_Zee'   : ['EWKZNuNu','EWKZLL','SR','ZE'],
             'EWK_W_from_Wmumu' : ['EWKW','EWKW','SR','WM'],
             'EWK_W_from_Wenu' : ['EWKW','EWKW','SR','WE'],
-            'EWK_Z_from_Wlnu' : ['EWKZNuNu','EWKW','SR','SR']
+            'EWK_Z_from_Wlnu' : ['EWKZNuNu','EWKW','SR','SR'],
+            # next two lines: QCDZ/EWKZ and QCDW/EWKW in SR
+            'Z_from_EWKZ' : ['ZNuNu','EWKZNuNu','SR','SR'],
+            'W_from_EWKW' : ['W','EWKW','SR','SR']
             }
         
         for s,v in sel_steps.iteritems():
@@ -289,8 +295,9 @@ if __name__ == "__main__":
                 outdir = options.pdir if options.pdir else 'templates'
                 file_prefix = outdir+('/'+v+'/templates_'+options.transferFactor+'_')
                 num_file=file_prefix+tf[2]+'.root'; den_file=file_prefix+tf[3]+'.root'
-                num_sel='SR'; den_sel='CR' if (k!='Z_from_Wlnu' and k!='EWK_Z_from_Wlnu') else 'SR'
+                num_sel='SR'; den_sel='CR' if (k not in ['Z_from_Wlnu','EWK_Z_from_Wlnu','Z_from_EWKZ','W_from_EWKW']) else 'SR'
      
+                print " "  # just a space to separate things
                 print "# computing transfer factor: ",k, " reading ", num_sel, " histos from ",num_file," and ",den_sel, " histos from ",den_file
         
                 systsUpL   = ['lepID_up']
@@ -299,19 +306,23 @@ if __name__ == "__main__":
                 systsUpG   = ['QCD_renScaleUp', 'QCD_facScaleUp', 'QCD_pdfUp', 'EWK_up']
                 systsDownG = ['QCD_renScaleDown', 'QCD_facScaleDown', 'QCD_pdfDown', 'EWK_down']
              
+                # currently not used
                 titles = {'ZLL':'R_{Z(#mu#mu)}',
                           'W':'R_{W(#mu#mu)}'}
              
                 systs={}
              
-                if den_proc=='ZLL' or den_proc=='W' or den_proc=='EWKZLL' or den_proc=='EWKW':
+                # now add lepton systematics
+                # there should not be any if den_proc is W or EWKW or EWKZNuNu for transfer factors involving only SR
+                # however, they are not present in vbfdm/syst_SR.txt so the systematic will be 0
+                if den_proc=='ZLL' or den_proc=='W' or den_proc=='EWKZLL' or den_proc=='EWKW' or den_proc=='EWKZNuNu' :
                     systs[(den_proc,'CR','up')]=systsUpL
                     systs[(den_proc,'CR','down')]=systsDownL
                 elif den_proc=='GJetsHT':
                     systs[(den_proc,'CR','up')]=systsUpG
                     systs[(den_proc,'CR','down')]=systsDownG
                 else:
-                    print "ERROR! Denominator processes can be only ZLL or W or EWKZLL or EWKW or GJetsHT"
+                    print "ERROR! Denominator processes can be only ZLL or W or EWKZLL or EWKW or GJetsHT or EWKZNuNu (last is for QCDZ/EWKZ in SR)"
                     exit()
              
                 if num_proc=='ZNuNu':
@@ -319,14 +330,16 @@ if __name__ == "__main__":
                     systs[(num_proc,'SR','down')]=[]
                     if den_proc=='ZLL': title = 'R_{Z}'
                     elif den_proc=='W': title = 'R_{Z/W}'
+                    elif den_proc=='EWKZNuNu': title = 'R_{Z/EWKZ}'
                     elif den_proc=='GJetsHT': title = 'R_{#gamma}'
                     else: exit()
                 elif num_proc=='W':
                     systs[(num_proc,'SR','up')]=[]
                     systs[(num_proc,'SR','down')]=[]
                     if den_proc=='W': title = 'R_{W}'
+                    elif den_proc=='EWKW': title = 'R_{W/EWKW}'
                     else:
-                        print "Num is ",num_proc," so only W is allowed as denominator"
+                        print "Num is ",num_proc," so only W or EWKW is allowed as denominator"
                         exit()
                 elif num_proc=='EWKZNuNu':
                     systs[(num_proc,'SR','up')]=[]
@@ -347,9 +360,16 @@ if __name__ == "__main__":
                     exit()
              
              
-                outname = outdir+"/"+v+"/rfactors_"+options.transferFactor+"_"+num_proc+num_sel+"_Over_"+tf[3]+den_sel+".root"
+                # if tf[3] is not SR, use it to build file name, otherwise use den_proc
+                # den_proc is not used by default because for den_sel=CR it does not distinguish lepton flavour (e.g., it is ZLL for Z region, while tf[3] is ZE or ZM)
+                # this distinction is necessary to avoid deletion (due to RECREATE opening mode) of file when num_proc=ZNuNu
+                # (we have two TF with den_proc=ZNuNu and tf[3]=SR, that is Z_from_Wlnu and Z_from_EWKZ)
+                outname = outdir+"/"+v+"/rfactors_"+options.transferFactor+"_"+num_proc+num_sel+"_Over_"
+                outname += tf[3] if tf[3] != 'SR' else den_proc
+                outname += den_sel+".root"
                 outfile = rt.TFile(outname,"RECREATE")
              
+                print systs
                 rfm = RFactorMaker(options.transferFactor,num_file,den_file,num_proc,den_proc,systs)
                 hists = rfm.computeFullError(outfile)
                 rfac_full = rfm.computeRFactors(hists,outfile,"full")

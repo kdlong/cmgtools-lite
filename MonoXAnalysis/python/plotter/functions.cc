@@ -226,4 +226,24 @@ float vbfdm_2Dto1D(float mjj, float detajj) {
   else return binning.GetNbinsX()*(binning.GetYaxis()->FindBin(detajj)-1) + binning.GetXaxis()->FindBin(mjj) - 2*(detajj>bins_detajj[1] && detajj<bins_detajj[2]) - 5*(detajj>bins_detajj[2]);
 }
 
+
+float mt_lu_cart(float lep_pt, float lep_phi, float u_x, float u_y)
+{
+  float lep_px = lep_pt*std::cos(lep_phi), lep_py = lep_pt*std::sin(lep_phi);
+  float u = hypot(u_x,u_y);
+  float uDotLep = u_x*lep_px + u_y*lep_py;
+  return sqrt(2*lep_pt*sqrt(u*u+lep_pt*lep_pt+2*uDotLep) + 2*uDotLep + 2*lep_pt*lep_pt);
+}
+
+float Hypot(float x, float y) {
+  return hypot(x,y);
+}
+
+
+// float ptZfromLeptons(float pt1, float eta1, float phi1, float mass1, float pt2, float eta2, float phi2, float mass2) {
+
+  
+
+// }
+
 void functions() {}

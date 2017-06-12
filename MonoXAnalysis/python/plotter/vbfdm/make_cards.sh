@@ -125,7 +125,7 @@ fi
 
 if [[ "$1" == "all" || "$1" == "SR" ]] ; then
     OPTIONS_SR="${OPTIONS} -P \"$TREEMET\" -F mjvars/t \"$TREEMET/${EVVARFRIEND_DIR_SR}/evVarFriend_{cname}.root\" --FMC sf/t \"$TREEMET/friends/sfFriend_{cname}.root\" -W 'puw*SF_trigmetnomu*SF_BTag*SF_NLO_QCD*SF_NLO_EWK' "
-    command="python makeShapeCards.py ${DOFILE} vbfdm/mca-80X-sync.txt vbfdm/vbfdm.txt ${VARIABLE} $SYST $OPTIONS_SR --od ${OUTNAME}/${PRESEL}/$VARNAME --processesFromCR ZNuNu,EWKZNuNu,W,EWKW --correlateProcessCR 'W,ZNuNu,SR,rfac_W_full,templates/${PRESEL}/rfactors_${VARNAME}_ZNuNuSR_Over_SRSR.root' --correlateProcessCR 'EWKW,EWKZNuNu,SR,rfac_EWKW_full,templates/${PRESEL}/rfactors_${VARNAME}_EWKZNuNuSR_Over_SRSR.root' --region SR --unbinned"
+    command="python makeShapeCards.py ${DOFILE} vbfdm/mca-80X-sync.txt vbfdm/vbfdm.txt ${VARIABLE} $SYST $OPTIONS_SR --od ${OUTNAME}/${PRESEL}/$VARNAME --processesFromCR ZNuNu,EWKZNuNu,W,EWKW --correlateProcessCR 'W,ZNuNu,SR,rfac_W_full,templates/${PRESEL}/rfactors_${VARNAME}_ZNuNuSR_Over_WSR.root' --correlateProcessCR 'EWKW,EWKZNuNu,SR,rfac_EWKW_full,templates/${PRESEL}/rfactors_${VARNAME}_EWKZNuNuSR_Over_EWKWSR.root' --correlateProcessCR 'EWKZNuNu,ZNuNu,SR,rfac_EWKZNuNu_full,templates/${PRESEL}/rfactors_${VARNAME}_ZNuNuSR_Over_EWKZNuNuSR.root' --correlateProcessCR 'EWKW,W,SR,rfac_EWKW_full,templates/${PRESEL}/rfactors_${VARNAME}_WSR_Over_EWKWSR.root' --region SR --unbinned"
     echo "===> EXECUTING " $command
     eval $command
     echo "Done at $(date)"

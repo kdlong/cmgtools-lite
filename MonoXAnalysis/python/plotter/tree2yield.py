@@ -240,11 +240,11 @@ class TreeToYield:
         if "root://" in self._fname: self._tree.SetCacheSize()
         self._friends = []
         friendOpts = self._options.friendTrees[:]
-        friendOpts += [ ('sf/t', d+"/evVarFriend_{cname}.root") for d in self._options.friendTreesSimple]
+        friendOpts += [ ('mjvars/t', d+"/evVarfFriend_{cname}.root") for d in self._options.friendTreesSimple]
         friendOpts += (self._options.friendTreesData if self._isdata else self._options.friendTreesMC)
-        friendOpts += [ ('sf/t', d+"/evVarFriend_{cname}.root") for d in (self._options.friendTreesDataSimple if self._isdata else self._options.friendTreesMCSimple) ]
+        friendOpts += [ ('sf/t', d+"/sfFriend_{cname}.root") for d in (self._options.friendTreesDataSimple if self._isdata else self._options.friendTreesMCSimple) ]
         if 'Friends' in self._settings: friendOpts += self._settings['Friends']
-        if 'FriendsSimple' in self._settings: friendOpts += [ ('sf/t', d+"/evVarFriend_{cname}.root") for d in self._settings['FriendsSimple'] ]
+        if 'FriendsSimple' in self._settings: friendOpts += [ ('sf/t', d+"/sfFriend_{cname}.root") for d in self._settings['FriendsSimple'] ]
         for tf_tree,tf_file in friendOpts:
 #            print 'Adding friend',tf_tree,tf_file
             tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname, P=getattr(self._options,'path',''))),
